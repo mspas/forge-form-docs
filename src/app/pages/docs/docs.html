@@ -1,0 +1,32 @@
+<app-header />
+
+<div class="docs">
+  <!-- mobile TOC toggle -->
+  <button type="button" class="docs__toggle" (click)="toggleMenu()">
+    <span>{{ menuOpen() ? '✕' : '☰' }}</span> On this page
+  </button>
+
+  <aside class="docs__side" [class.open]="menuOpen()">
+    <div class="side__head">Contents</div>
+    <nav class="side__nav">
+      @for (entry of toc(); track entry.id) {
+        <a
+          [href]="'#' + entry.id"
+          class="side__link"
+          [class.side__link--sub]="entry.level === 3"
+          [class.active]="activeId() === entry.id"
+          (click)="goTo(entry, $event)"
+        >{{ entry.text }}</a>
+      }
+    </nav>
+  </aside>
+
+  <main class="docs__main">
+    @if (safeHtml()) {
+      <article #docBody class="markdown" [innerHTML]="safeHtml()"></article>
+    } @else {
+      <div class="docs__loading">Loading documentation…</div>
+    }
+    <app-footer />
+  </main>
+</div>

@@ -1,0 +1,36 @@
+<div class="pf-host pf-card">
+  <!-- chrome bar -->
+  <div class="pf-chrome">
+    <span class="dot dot--red"></span>
+    <span class="dot dot--amber"></span>
+    <span class="dot dot--teal"></span>
+    <span class="pf-chrome__title">forge-form · live playground</span>
+    <button type="button" class="pf-reset" (click)="reset()">↺ reset</button>
+  </div>
+
+  <div class="pf-split">
+    <!-- left: schema source -->
+    <div class="pf-source">
+      <app-code-block [code]="source" language="typescript" />
+    </div>
+
+    <!-- right: rendered, live output (the real engine) -->
+    <div class="pf-output">
+      <div class="pf-output__label">
+        <span>Rendered output</span>
+        <span class="pf-output__rule"></span>
+      </div>
+
+      <forge-form-angular [schema]="schema()" (formSubmit)="onSubmit()" />
+
+      @if (submitted()) {
+        <span class="pf-ok">✓ Valid — submitted</span>
+      }
+
+      <div class="pf-value">
+        <div class="pf-value__comment">// form.value() — signal, live</div>
+        <div class="pf-value__json">{{ valueJson }}</div>
+      </div>
+    </div>
+  </div>
+</div>

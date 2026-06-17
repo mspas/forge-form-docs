@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"E:\\\\Moje\\\\projects\\\\forge-form\\\\projects\\\\forge-form-angular\\\\src\"; echo \"---\"; ls \"E:\\\\Moje\\\\projects\\\\forge-form\\\\projects\\\\forge-form-angular\")",
+      "Bash(ng version *)",
+      "Read(//e/Moje/projects/forge-form/**)",
+      "Read(//e/Moje/projects/forge-form/dist/**)",
+      "Read(//e/Moje/projects/**)",
+      "Bash(rm -rf _ffdocs_tmp)",
+      "Bash(NG_CLI_ANALYTICS=false ng new forge-form-docs --directory _ffdocs_tmp --style scss --ssr false --routing --skip-git --package-manager npm --defaults)"
+    ]
+  }
+}

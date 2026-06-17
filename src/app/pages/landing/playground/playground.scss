@@ -1,0 +1,134 @@
+:host {
+  display: block;
+}
+
+.pf-card {
+  width: 100%;
+  background: var(--pf-bg);
+  border: 1px solid var(--pf-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.55);
+}
+
+.pf-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  background: var(--surface-code);
+  border-bottom: 1px solid var(--pf-border);
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+
+  &--red {
+    background: #e8765a;
+  }
+  &--amber {
+    background: #e0b23c;
+  }
+  &--teal {
+    background: #1fbfa6;
+  }
+}
+
+.pf-chrome__title {
+  margin-left: 8px;
+  font: 600 12px var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--pf-muted);
+}
+
+.pf-reset {
+  margin-left: auto;
+  font: 600 11.5px var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--pf-muted);
+  background: transparent;
+  border: 1px solid var(--pf-border);
+  border-radius: 7px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    color: var(--pf-text);
+    border-color: var(--text-dim-3);
+  }
+}
+
+.pf-split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.pf-source {
+  flex: 1 1 320px;
+  min-width: 300px;
+  background: var(--surface-code);
+  border-right: 1px solid var(--pf-border);
+  padding: 18px 20px;
+  font: 13px/1.85 var(--font-mono);
+
+  app-code-block {
+    font: inherit;
+  }
+}
+
+.pf-output {
+  flex: 1 1 320px;
+  min-width: 300px;
+  background: var(--pf-bg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pf-output__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 11px var(--font-mono);
+  letter-spacing: 0.14em;
+  color: var(--pf-accent);
+  text-transform: uppercase;
+}
+
+.pf-output__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--pf-border);
+}
+
+.pf-ok {
+  font: 600 12.5px var(--font-body);
+  color: var(--pf-accent);
+}
+
+.pf-value {
+  margin-top: auto;
+  background: var(--surface-code);
+  border: 1px solid var(--pf-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font: 12.5px/1.6 var(--font-mono);
+}
+
+.pf-value__comment {
+  color: var(--text-dim-3);
+  margin-bottom: 4px;
+}
+
+.pf-value__json {
+  color: var(--code-inline);
+  word-break: break-word;
+}
