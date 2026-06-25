@@ -27,8 +27,12 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Using `npm install` (not `npm ci`): the lockfile is generated on
+      # Windows, which omits Linux-only optional deps (the @emnapi/* wasm
+      # fallback for native build tools). `npm ci` rejects that mismatch;
+      # `npm install` reconciles it on the Linux runner.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       # Project page is served from https://<user>.github.io/forge-form-docs/
       # so the app must be built with a matching base-href.
