@@ -37,7 +37,7 @@ export class Header {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 1600);
     } catch {
-      /* clipboard unavailable — no-op */
+      /* clipboard unavailable - no-op */
     }
   }
 }

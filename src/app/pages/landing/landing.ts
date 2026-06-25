@@ -1,9 +1,15 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Header } from '../../shared/header/header';
 import { GithubIcon } from '../../shared/github-icon/github-icon';
 import { Playground } from './playground/playground';
 import { GITHUB_URL, NPM_INSTALL } from '../../shared/site';
+import { SeoService } from '../../shared/seo.service';
 
 interface FeatureCard {
   label: string;
@@ -24,6 +30,15 @@ export class Landing {
   readonly install = NPM_INSTALL;
 
   protected readonly copied = signal(false);
+
+  constructor() {
+    inject(SeoService).update({
+      title: 'ForgeForm - Schema-based forms for Angular 21+',
+      description:
+        'ForgeForm turns a plain TypeScript schema into a fully-wired Angular form - FormGroup, signals, validation, hints, error messages and conditional fields. No boilerplate.',
+      path: '',
+    });
+  }
 
   readonly compat = [
     { label: 'Angular 21+', accent: true },
@@ -66,7 +81,7 @@ export class Landing {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 1600);
     } catch {
-      /* clipboard unavailable — no-op */
+      /* clipboard unavailable - no-op */
     }
   }
 }

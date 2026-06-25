@@ -1,6 +1,7 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, shareReplay } from 'rxjs';
+import { EMPTY, Observable, map, shareReplay } from 'rxjs';
 import { marked } from 'marked';
 import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -57,11 +58,19 @@ function slugify(text: string): string {
 @Injectable({ providedIn: 'root' })
 export class DocsContentService {
   private readonly http = inject(HttpClient);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** Raw markdown, fetched once and shared by both the renderer and meta parse. */
-  private readonly raw$: Observable<string> = this.http
-    .get('docs/user-guide.md', { responseType: 'text' })
-    .pipe(shareReplay(1));
+  /**
+   * Raw markdown, fetched once and shared by both the renderer and meta parse.
+   * Browser-only: `render()` relies on `DOMParser` and the fetch needs an
+   * origin, neither of which exist during static prerender - so on the server
+   * this is `EMPTY` and the content hydrates on the client.
+   */
+  private readonly raw$: Observable<string> = this.isBrowser
+    ? this.http
+        .get('docs/user-guide.md', { responseType: 'text' })
+        .pipe(shareReplay(1))
+    : EMPTY;
 
   private readonly doc$: Observable<RenderedDoc> = this.raw$.pipe(
     map((md) => this.render(md)),

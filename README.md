@@ -4,8 +4,8 @@ Marketing landing page + full documentation for the
 [`@forge-form/angular`](https://github.com/mspas/forge-form) library, built with
 **Angular 21** (standalone, zoneless, signal-based).
 
-The landing page recreates the "Landing 01 — Technical" design handoff and embeds
-a **live playground powered by the real `@forge-form/angular` engine** — not a
+The landing page recreates the "Landing 01 - Technical" design handoff and embeds
+a **live playground powered by the real `@forge-form/angular` engine** - not a
 mock. The docs page renders the library's complete technical reference.
 
 ## Run it
@@ -55,7 +55,7 @@ At runtime, `DocsContentService` (`src/app/pages/docs/docs-content.service.ts`):
 
 The `Docs` component renders that HTML, builds the sidebar from the generated TOC,
 and uses an `IntersectionObserver` for scroll-spy. To update the docs, just edit
-the Markdown file — no code changes required.
+the Markdown file - no code changes required.
 
 ## How the live playground uses the real library
 

@@ -5,12 +5,12 @@ export const routes: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/landing/landing').then((m) => m.Landing),
-    title: 'ForgeForm - Schema-based forms for Angular 21+',
+    // Title (+ description/OG/canonical) is set by SeoService in each page so
+    // all SEO metadata lives in one place; the router must not override it.
   },
   {
     path: 'docs',
     loadComponent: () => import('./pages/docs/docs').then((m) => m.Docs),
-    title: 'ForgeForm - Documentation',
   },
   { path: '**', redirectTo: '' },
 ];

@@ -34,17 +34,18 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      # Project page is served from https://<user>.github.io/forge-form-docs/
-      # so the app must be built with a matching base-href.
+      # Served from the apex custom domain (forgeform.dev, via public/CNAME),
+      # so the app is built at the site root.
       - name: Build
-        run: npm run build -- --base-href /forge-form-docs/
+        run: npm run build -- --base-href /
 
-      # GitHub Pages has no SPA rewrite. Serving index.html as 404.html makes
-      # deep links (e.g. /docs) and reloads boot the Angular app, which then
-      # routes client-side. .nojekyll keeps Pages from filtering files.
+      # Known routes (/ and /docs) are prerendered to their own index.html, so
+      # deep links work directly. For any *unknown* path, GitHub Pages serves
+      # 404.html - point it at the CSR shell so the Angular app boots and its
+      # wildcard route redirects home. .nojekyll keeps Pages from filtering files.
       - name: Prepare SPA fallback
         run: |
-          cp dist/forge-form-docs/browser/index.html dist/forge-form-docs/browser/404.html
+          cp dist/forge-form-docs/browser/index.csr.html dist/forge-form-docs/browser/404.html
           touch dist/forge-form-docs/browser/.nojekyll
 
       - name: Upload Pages artifact

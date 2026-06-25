@@ -1,4 +1,4 @@
-/* forge-form docs — global styles
+/* forge-form docs - global styles
    Sources the library layout classes, then themes them dark to match the
    landing mockup. Design tokens are taken verbatim from the design handoff. */
 
@@ -132,7 +132,7 @@ a {
 }
 
 /* ===========================================================================
-   Playground — dark theme override for the real <forge-form-angular> form.
+   Playground - dark theme override for the real <forge-form-angular> form.
    The library exposes .forge-form-* hooks; we restyle them to the mockup's
    dark "rendered output" panel using the --pf-* tokens.
    =========================================================================== */
@@ -299,7 +299,7 @@ a {
       border-bottom-color: var(--accent);
     }
 
-    /* model-reference links wrap an inline code chip — fill it with the
+    /* model-reference links wrap an inline code chip - fill it with the
        accent colour on hover instead of underlining. */
     &:has(code) {
       border-bottom: none;
@@ -408,7 +408,7 @@ a {
   }
 }
 
-/* ---- highlight.js — custom theme matching the mockup's code colors ---- */
+/* ---- highlight.js - custom theme matching the mockup's code colors ---- */
 .hljs {
   color: var(--code-inline);
   background: transparent;

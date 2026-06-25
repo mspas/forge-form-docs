@@ -14,6 +14,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Header } from '../../shared/header/header';
 import { Footer } from '../../shared/footer/footer';
 import { DocsContentService, TocEntry } from './docs-content.service';
+import { SeoService } from '../../shared/seo.service';
 
 @Component({
   selector: 'app-docs',
@@ -41,6 +42,13 @@ export class Docs {
   private wired = false;
 
   constructor() {
+    inject(SeoService).update({
+      title: 'ForgeForm Documentation - Angular schema form reference',
+      description:
+        'Full reference for ForgeForm: define a TypeScript schema and get a complete Angular Reactive Form with validation, conditional fields, hints and signal-based state.',
+      path: 'docs',
+    });
+
     effect(() => {
       const doc = this.rendered();
       if (!doc) return;
@@ -102,7 +110,7 @@ export class Docs {
    * In-content anchors (e.g. the markdown Table of Contents) are plain
    * `<a href="#section">` links. Because index.html sets `<base href="/">`,
    * the browser would resolve those fragments against the base and navigate
-   * to `/#section` — bouncing back to the landing page. Intercept them and
+   * to `/#section` - bouncing back to the landing page. Intercept them and
    * scroll in place instead.
    */
   protected onContentClick(event: MouseEvent): void {
