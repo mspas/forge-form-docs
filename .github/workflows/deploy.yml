@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Allow the GITHUB_TOKEN to deploy to Pages and let one in-progress
+# deploy finish before the next starts.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Project page is served from https://<user>.github.io/forge-form-docs/
+      # so the app must be built with a matching base-href.
+      - name: Build
+        run: npm run build -- --base-href /forge-form-docs/
+
+      # GitHub Pages has no SPA rewrite. Serving index.html as 404.html makes
+      # deep links (e.g. /docs) and reloads boot the Angular app, which then
+      # routes client-side. .nojekyll keeps Pages from filtering files.
+      - name: Prepare SPA fallback
+        run: |
+          cp dist/forge-form-docs/browser/index.html dist/forge-form-docs/browser/404.html
+          touch dist/forge-form-docs/browser/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/forge-form-docs/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

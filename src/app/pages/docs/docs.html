@@ -2,28 +2,35 @@
 
 <div class="docs">
   <!-- mobile TOC toggle -->
-  <button type="button" class="docs__toggle" (click)="toggleMenu()">
+  <button type="button" class="docs__sidebar-toggle" (click)="toggleMenu()">
     <span>{{ menuOpen() ? '✕' : '☰' }}</span> On this page
   </button>
 
-  <aside class="docs__side" [class.open]="menuOpen()">
-    <div class="side__head">Contents</div>
-    <nav class="side__nav">
+  <aside class="docs__sidebar" [class.open]="menuOpen()">
+    <div class="docs__sidebar-heading">Contents</div>
+    <nav class="docs__sidebar-nav">
       @for (entry of toc(); track entry.id) {
         <a
           [href]="'#' + entry.id"
-          class="side__link"
-          [class.side__link--sub]="entry.level === 3"
+          class="docs__sidebar-link"
+          [class.docs__sidebar-link--nested]="entry.level === 3"
           [class.active]="activeId() === entry.id"
           (click)="goTo(entry, $event)"
-        >{{ entry.text }}</a>
+        >
+          {{ entry.text }}
+        </a>
       }
     </nav>
   </aside>
 
   <main class="docs__main">
     @if (safeHtml()) {
-      <article #docBody class="markdown" [innerHTML]="safeHtml()"></article>
+      <article
+        #docBody
+        class="markdown"
+        [innerHTML]="safeHtml()"
+        (click)="onContentClick($event)"
+      ></article>
     } @else {
       <div class="docs__loading">Loading documentation…</div>
     }

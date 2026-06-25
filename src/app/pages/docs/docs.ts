@@ -95,13 +95,31 @@ export class Docs {
   protected goTo(entry: TocEntry, event: Event): void {
     event.preventDefault();
     this.menuOpen.set(false);
+    this.scrollToId(entry.id);
+  }
+
+  /**
+   * In-content anchors (e.g. the markdown Table of Contents) are plain
+   * `<a href="#section">` links. Because index.html sets `<base href="/">`,
+   * the browser would resolve those fragments against the base and navigate
+   * to `/#section` — bouncing back to the landing page. Intercept them and
+   * scroll in place instead.
+   */
+  protected onContentClick(event: MouseEvent): void {
+    const anchor = (event.target as HTMLElement).closest('a');
+    const href = anchor?.getAttribute('href');
+    if (!href || !href.startsWith('#')) return;
+    event.preventDefault();
+    this.scrollToId(decodeURIComponent(href.slice(1)));
+  }
+
+  private scrollToId(id: string): void {
     const host = this.contentRef()?.nativeElement;
-    const target = host?.querySelector<HTMLElement>(`#${CSS.escape(entry.id)}`);
-    if (target) {
-      this.activeId.set(entry.id);
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      history.replaceState(null, '', `#${entry.id}`);
-    }
+    const target = host?.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+    if (!target) return;
+    this.activeId.set(id);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.replaceState(null, '', `#${id}`);
   }
 
   protected toggleMenu(): void {

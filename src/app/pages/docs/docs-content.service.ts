@@ -29,6 +29,22 @@ export interface RenderedDoc {
   toc: TocEntry[];
 }
 
+/** Library metadata parsed from the reference doc's header line. */
+export interface DocMeta {
+  version: string; // semver, e.g. "1.1.0"
+  license: string; // e.g. "MIT"
+}
+
+/**
+ * Reads the `**Version:** x.y.z · **License:** NAME` line near the top of the
+ * reference doc, so the version shown across the site has a single source.
+ */
+function parseMeta(markdown: string): DocMeta {
+  const version = /\*\*Version:\*\*\s*([^\s·|]+)/i.exec(markdown)?.[1] ?? '';
+  const license = /\*\*License:\*\*\s*([A-Za-z0-9.\-+]+)/i.exec(markdown)?.[1] ?? '';
+  return { version, license };
+}
+
 /** GitHub-flavoured heading slug (matches the anchors used across the site). */
 function slugify(text: string): string {
   return text
@@ -42,15 +58,23 @@ function slugify(text: string): string {
 export class DocsContentService {
   private readonly http = inject(HttpClient);
 
-  private readonly doc$: Observable<RenderedDoc> = this.http
-    .get('docs/library-reference.md', { responseType: 'text' })
-    .pipe(
-      map((md) => this.render(md)),
-      shareReplay(1),
-    );
+  /** Raw markdown, fetched once and shared by both the renderer and meta parse. */
+  private readonly raw$: Observable<string> = this.http
+    .get('docs/user-guide.md', { responseType: 'text' })
+    .pipe(shareReplay(1));
+
+  private readonly doc$: Observable<RenderedDoc> = this.raw$.pipe(
+    map((md) => this.render(md)),
+    shareReplay(1),
+  );
 
   load(): Observable<RenderedDoc> {
     return this.doc$;
+  }
+
+  /** Library version + license, without rendering the full document. */
+  meta(): Observable<DocMeta> {
+    return this.raw$.pipe(map((md) => parseMeta(md)));
   }
 
   private render(markdown: string): RenderedDoc {

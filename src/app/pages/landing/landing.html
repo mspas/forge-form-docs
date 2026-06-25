@@ -1,28 +1,19 @@
-<div class="lp">
-  <!-- ============================ HEADER ============================ -->
-  <header class="hdr">
-    <a class="hdr__brand" routerLink="/" aria-label="forge-form home">
-      <app-logo [width]="36" [height]="22" />
-      <span class="hdr__wordmark">forge-form</span>
-    </a>
-    <div class="hdr__right">
-      <span class="hdr__meta">v1.0 · MIT</span>
-      <a routerLink="/docs" class="pill">Get started ↗</a>
-    </div>
-  </header>
+<app-header />
 
+<div class="landing">
   <!-- ============================= HERO ============================= -->
   <section class="hero">
-    <div class="hero__eyebrow">Schema-driven · Signal-based · Angular 21+</div>
-    <h1 class="hero__title">SCHEMA BASED<br />ANGULAR <span class="accent">FORMS</span>.</h1>
+    <h1 class="hero__title">
+      <span class="accent">FORGE</span> YOUR<br />
+      NEXT <span class="accent">FORM</span>
+    </h1>
     <div class="hero__row">
       <p class="hero__lead">
-        Lightweight form-generation library. Hand forge-form a TypeScript schema and get
-        back a fully-reactive Angular form — validation, errors and conditional
-        fields, free.
+        Hand forge-form a TypeScript schema and get back a fully-reactive Angular
+        form — validation, errors and conditional fields, free.
       </p>
-      <button type="button" class="term" (click)="copyInstall()">
-        <span class="term__sigil">$</span>
+      <button type="button" class="install-btn" (click)="copyInstall()">
+        <span class="install-btn__sigil">$</span>
         {{ copied() ? 'copied to clipboard' : install }}
         <span>⧉</span>
       </button>
@@ -31,8 +22,7 @@
 
   <!-- ======================= COMPATIBILITY STRIP ======================= -->
   <div class="compat">
-    <div class="compat__inner">
-      <span class="compat__label">Built for</span>
+    <div class="compat__content">
       @for (chip of compat; track chip.label) {
         <span class="chip" [class.chip--accent]="chip.accent">{{ chip.label }}</span>
       }
@@ -40,31 +30,28 @@
   </div>
 
   <!-- ========================= FEATURE CARDS ========================= -->
-  <section class="powers">
-    <div class="powers__head">
-      <h2 class="powers__title">Four powers,<br />one object.</h2>
-    </div>
+  <section class="features">
     @for (f of features; track f.label) {
-      <article class="pcard" [class]="'pcard--' + f.variant">
-        <span class="pcard__label">{{ f.label }}</span>
+      <article class="feature-card" [class]="'feature-card--' + f.variant">
+        <span class="feature-card__label">{{ f.label }}</span>
         <div>
-          <h3 class="pcard__title">{{ f.title }}</h3>
-          <p class="pcard__body">{{ f.body }}</p>
+          <h3 class="feature-card__title">{{ f.title }}</h3>
+          <p class="feature-card__body">{{ f.body }}</p>
         </div>
       </article>
     }
   </section>
 
   <!-- ========================== PLAYGROUND ========================== -->
-  <section class="see" id="playground">
-    <div class="see__head">
-      <h2 class="see__title">Live preview.</h2>
-      <span class="see__note">
+  <section class="playground-section" id="playground">
+    <div class="playground-section__header">
+      <h2 class="playground-section__title">Preview.</h2>
+      <span class="playground-section__description">
         Type into the form. Toggle <span class="accent">employed</span> and watch
         the conditional field — and the signal value — update live.
       </span>
     </div>
-    <div class="see__frame">
+    <div class="playground-section__frame">
       <app-playground />
     </div>
   </section>
@@ -72,12 +59,18 @@
   <!-- ========================== CTA BAND ========================== -->
   <section class="cta">
     <div class="cta__inner">
-      <h2 class="cta__title">Forge your first form.</h2>
-      <code class="cta__code">npm i &#64;forge-form/angular</code>
+      <h2 class="cta__title">Try it now.</h2>
+      <code class="cta__install-code">npm i &#64;forge-form/angular</code>
       <div class="cta__buttons">
         <a routerLink="/docs" class="cta__btn cta__btn--solid">Read the docs</a>
-        <a routerLink="/docs" fragment="schema-reference" class="cta__btn cta__btn--outline">
-          Schema reference
+        <a
+          [href]="githubUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="cta__btn cta__btn--outline cta__btn--github"
+        >
+          <app-github-icon [size]="18" />
+          Check on GitHub
         </a>
       </div>
     </div>

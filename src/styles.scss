@@ -10,20 +10,16 @@
   --bg-band: #0a0908;
   --surface-card: #14110d;
   --surface-code: #100e0c;
-  --surface-inset: #15110d;
 
   /* ---- text ---- */
   --text-strong: #f5f1e9;
   --text-body: #ede7dd;
   --text-muted: #a89e8e;
   --text-dim: #9a9080;
-  --text-dim-2: #8e8579;
-  --text-dim-3: #7c7367;
-  --text-dim-4: #6e665a;
+  --text-faint: #6e665a;
 
   /* ---- borders ---- */
   --line-1: #1a1611;
-  --line-2: #1c1812;
   --line-3: #221c15;
   --line-4: #2a2218;
 
@@ -31,11 +27,8 @@
   --accent: #1fbfa6;
   --accent-dark: #0e9b83;
   --accent-ink: #07140f;
-  --accent-ink-2: #0b1714;
-  --accent-ink-3: #08130f;
   --accent-border: #234039;
   --accent-tint: #0e1b18;
-  --accent-tint-2: #0f1c19;
 
   /* ---- cream (expressive card) ---- */
   --cream: #ede7dd;
@@ -51,13 +44,13 @@
   --code-type: #7fd8c9;
   --code-keyword: #c792ea;
   --code-inline: #c8beae;
-  --code-comment: #7c7367;
-  --code-fn: #1fbfa6;
+  --code-comment: var(--text-faint); /* same tone as faintest body text */
+  --code-fn: var(--accent);
   --code-punct: #8e8579;
 
   /* ---- type families ---- */
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* ---- layout ---- */
@@ -155,16 +148,16 @@ a {
   .forge-form {
     font-family: var(--font-body);
     font-size: 14px;
-    gap: 15px;
+    gap: 16px;
     color: var(--pf-text);
   }
 
   .forge-form-group {
-    gap: 14px;
+    gap: 16px;
   }
 
   .forge-form-field-container {
-    gap: 6px;
+    gap: 8px;
   }
 
   /* checkbox row: render box first, then label (matches the mockup) */
@@ -172,7 +165,7 @@ a {
     flex-direction: row-reverse;
     justify-content: flex-end;
     align-items: center;
-    gap: 11px;
+    gap: 12px;
   }
 
   .forge-form-field-label {
@@ -187,7 +180,7 @@ a {
     background: var(--pf-input);
     border: 1px solid var(--pf-border);
     border-radius: 10px;
-    padding: 11px 13px;
+    padding: 12px;
     color: var(--pf-text);
     font: 14px var(--font-body);
     outline: none;
@@ -217,7 +210,7 @@ a {
     font: 12px var(--font-body);
     color: var(--pf-error);
     display: flex;
-    gap: 5px;
+    gap: 4px;
 
     &::before {
       content: '⚠';
@@ -228,12 +221,12 @@ a {
     align-self: flex-start;
     margin-top: 2px;
     background: var(--pf-accent);
-    color: var(--accent-ink-2);
+    color: var(--accent-ink);
     font: 700 13.5px var(--font-body);
     letter-spacing: 0.01em;
     border: none;
     border-radius: 10px;
-    padding: 11px 20px;
+    padding: 12px 16px;
     cursor: pointer;
     transition: filter 0.16s ease;
 
@@ -272,17 +265,17 @@ a {
   }
   h2 {
     font-size: 28px;
-    margin: 56px 0 18px;
+    margin: 64px 0 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--line-3);
   }
   h3 {
     font-size: 20px;
-    margin: 36px 0 12px;
+    margin: 32px 0 12px;
   }
   h4 {
     font-size: 16px;
-    margin: 28px 0 10px;
+    margin: 32px 0 8px;
   }
 
   p,
@@ -305,12 +298,29 @@ a {
     &:hover {
       border-bottom-color: var(--accent);
     }
+
+    /* model-reference links wrap an inline code chip — fill it with the
+       accent colour on hover instead of underlining. */
+    &:has(code) {
+      border-bottom: none;
+
+      code {
+        transition: background-color 0.15s ease, border-color 0.15s ease,
+          color 0.15s ease;
+      }
+
+      &:hover code {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+    }
   }
 
   ul,
   ol {
-    margin: 0 0 18px;
-    padding-left: 22px;
+    margin: 0 0 16px;
+    padding-left: 24px;
   }
   li {
     margin: 4px 0;
@@ -320,8 +330,8 @@ a {
   }
 
   blockquote {
-    margin: 18px 0;
-    padding: 12px 18px;
+    margin: 16px 0;
+    padding: 12px 16px;
     border-left: 3px solid var(--accent);
     background: var(--accent-tint);
     border-radius: 0 10px 10px 0;
@@ -336,23 +346,23 @@ a {
   hr {
     border: none;
     border-top: 1px solid var(--line-3);
-    margin: 40px 0;
+    margin: 32px 0;
   }
 
   /* inline code */
   code {
     font: 0.86em var(--font-mono);
     color: var(--code-inline);
-    background: var(--surface-inset);
+    background: var(--surface-card);
     border: 1px solid var(--line-3);
     border-radius: 6px;
-    padding: 1px 6px;
+    padding: 2px 8px;
   }
 
   /* code blocks */
   pre {
-    margin: 0 0 22px;
-    padding: 18px 20px;
+    margin: 0 0 24px;
+    padding: 16px;
     background: var(--surface-code);
     border: 1px solid var(--line-3);
     border-radius: 14px;
@@ -379,7 +389,7 @@ a {
   th,
   td {
     text-align: left;
-    padding: 10px 14px;
+    padding: 8px 16px;
     border: 1px solid var(--line-3);
     vertical-align: top;
   }

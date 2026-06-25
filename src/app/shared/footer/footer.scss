@@ -1,33 +1,33 @@
-.ft__row {
+.site-footer {
   max-width: var(--content-max);
   margin: 0 auto;
-  padding: 30px var(--pad-x) 44px;
+  padding: 32px var(--pad-x);
   display: flex;
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;
   border-top: 1px solid var(--line-1);
-}
 
-.ft__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-dim-4);
-  font: 600 13px var(--font-mono);
-}
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-faint);
+    font: 600 13px var(--font-mono);
+  }
 
-.ft__links {
-  display: flex;
-  gap: 26px;
-  flex-wrap: wrap;
-  font: 500 13.5px var(--font-body);
-  color: var(--text-dim-2);
+  &__links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font: 500 13.5px var(--font-body);
+    color: var(--text-dim);
 
-  a {
-    transition: color 0.15s ease;
-    &:hover {
-      color: var(--text-body);
+    a {
+      transition: color 0.15s ease;
+      &:hover {
+        color: var(--text-body);
+      }
     }
   }
 }

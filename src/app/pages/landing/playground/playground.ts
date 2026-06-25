@@ -5,50 +5,63 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {
-  FormRendererComponent,
-  FormSchema,
-  minLength,
-  required,
-} from '@forge-form/angular';
+import { FormRendererComponent, FormSchema } from '@forge-form/angular';
 import { Subscription } from 'rxjs';
-import { CodeBlock } from '../../../shared/code-block/code-block';
 
-/** The TypeScript source shown in the left pane — kept in sync with `buildSchema()`. */
-const SCHEMA_SOURCE = `// describe it once
-schema: FormSchema = {
-  updateOn: 'blur',
-  options: { orientation: 'column', theme: 'default' },
-  controls: [
-    { type: 'text', controlName: 'firstName',
-      label: 'First name',
-      validators: [required(), minLength({ value: 3 })] },
-    { type: 'number', controlName: 'age',
-      label: 'Age', validators: [required()] },
-    { type: 'checkbox', controlName: 'employed',
-      label: 'Currently employed?', updateOn: 'change' },
-    { type: 'text', controlName: 'company',
-      label: 'Company',
-      visibility: { fn: c => !c.value.employed,
-        behavior: 'hide', clearOnHide: true } },
-  ],
-};
-
-// then, in the template
-<forge-form-angular [schema]="schema"
-  (formSubmit)="onSubmit($event)" />`;
+const DEFAULT_JSON = JSON.stringify(
+  {
+    updateOn: 'blur',
+    options: { orientation: 'column', theme: 'default' },
+    controls: [
+      {
+        type: 'text',
+        controlName: 'firstName',
+        label: 'First name',
+        placeholder: 'Enter your first name',
+        validators: [{ type: 'required' }, { type: 'minlength', value: 3 }],
+      },
+      {
+        type: 'number',
+        controlName: 'age',
+        label: 'Age',
+        placeholder: '0',
+        validators: [{ type: 'required' }],
+      },
+      {
+        type: 'checkbox',
+        controlName: 'employed',
+        label: 'Currently employed?',
+        updateOn: 'change',
+        options: { labelOrientation: 'row' },
+      },
+      {
+        type: 'select',
+        controlName: 'plan',
+        label: 'Plan',
+        placeholder: 'Pick a plan',
+        items: [
+          { label: 'Free', value: 'free' },
+          { label: 'Pro', value: 'pro' },
+          { label: 'Enterprise', value: 'enterprise' },
+        ],
+      },
+    ],
+  },
+  null,
+  2,
+);
 
 @Component({
   selector: 'app-playground',
-  imports: [FormRendererComponent, CodeBlock],
+  imports: [FormRendererComponent],
   templateUrl: './playground.html',
   styleUrl: './playground.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Playground {
-  protected readonly source = SCHEMA_SOURCE;
-
-  protected readonly schema = signal<FormSchema>(this.buildSchema());
+  protected readonly jsonSource = signal(DEFAULT_JSON);
+  protected readonly parseError = signal<string | null>(null);
+  protected readonly schema = signal<FormSchema>(JSON.parse(DEFAULT_JSON) as FormSchema);
   protected readonly value = signal<Record<string, unknown>>({});
   protected readonly submitted = signal(false);
 
@@ -56,7 +69,6 @@ export class Playground {
   private sub?: Subscription;
 
   constructor() {
-    // Mirror the real FormGroup's live value into a signal for the readout.
     effect((onCleanup) => {
       const form = this.renderer()?.formSignal();
       this.sub?.unsubscribe();
@@ -67,6 +79,18 @@ export class Playground {
     });
   }
 
+  protected onSourceChange(raw: string): void {
+    this.jsonSource.set(raw);
+    this.submitted.set(false);
+    try {
+      const parsed = JSON.parse(raw) as FormSchema;
+      this.schema.set(parsed);
+      this.parseError.set(null);
+    } catch (e) {
+      this.parseError.set(e instanceof Error ? e.message : String(e));
+    }
+  }
+
   protected onSubmit(): void {
     this.submitted.set(true);
   }
@@ -74,62 +98,14 @@ export class Playground {
   protected reset(): void {
     this.submitted.set(false);
     this.value.set({});
-    this.schema.set(this.buildSchema()); // fresh schema → engine rebuilds the form
+    this.parseError.set(null);
+    this.jsonSource.set(DEFAULT_JSON);
+    this.schema.set(JSON.parse(DEFAULT_JSON) as FormSchema);
   }
 
   protected get valueJson(): string {
-    const v = this.value() ?? {};
-    const parts: string[] = [];
-    if ('firstName' in v) parts.push(`firstName: "${v['firstName'] ?? ''}"`);
-    if ('age' in v) {
-      const age = v['age'];
-      parts.push(`age: ${age === '' || age == null ? 'null' : Number(age)}`);
-    }
-    if ('employed' in v) parts.push(`employed: ${!!v['employed']}`);
-    if (v['employed'] && 'company' in v)
-      parts.push(`company: "${v['company'] ?? ''}"`);
-    return `{ ${parts.join(', ')} }`;
-  }
-
-  private buildSchema(): FormSchema {
-    return {
-      updateOn: 'blur',
-      options: { orientation: 'column', theme: 'default' },
-      controls: [
-        {
-          type: 'text',
-          controlName: 'firstName',
-          label: 'First name',
-          placeholder: 'Enter your first name',
-          validators: [required(), minLength({ value: 3 })],
-        },
-        {
-          type: 'number',
-          controlName: 'age',
-          label: 'Age',
-          placeholder: '0',
-          validators: [required()],
-        },
-        {
-          type: 'checkbox',
-          controlName: 'employed',
-          label: 'Currently employed?',
-          updateOn: 'change',
-          options: { labelOrientation: 'row' },
-        },
-        {
-          type: 'text',
-          controlName: 'company',
-          label: 'Company',
-          placeholder: 'Where do you work?',
-          visibility: {
-            // real-engine semantics: fn truthy ⇒ hide. Hide while NOT employed.
-            fn: (c) => !(c.value as { employed?: boolean })?.employed,
-            behavior: 'hide',
-            clearOnHide: true,
-          },
-        },
-      ],
-    };
+    const v = this.value();
+    if (!v || Object.keys(v).length === 0) return '{}';
+    return JSON.stringify(v);
   }
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Logo } from '../../shared/logo/logo';
+import { Header } from '../../shared/header/header';
+import { GithubIcon } from '../../shared/github-icon/github-icon';
 import { Playground } from './playground/playground';
 import { GITHUB_URL, NPM_INSTALL } from '../../shared/site';
 
@@ -13,7 +14,7 @@ interface FeatureCard {
 
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink, Logo, Playground],
+  imports: [RouterLink, Header, Playground, GithubIcon],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,36 +27,35 @@ export class Landing {
 
   readonly compat = [
     { label: 'Angular 21+', accent: true },
+    { label: 'Schema-driven', accent: true },
     { label: 'Standalone', accent: false },
     { label: 'Signal-based', accent: true },
-    { label: 'OnPush', accent: false },
-    { label: 'Reactive Forms under the hood', accent: false },
-    { label: 'SSR-safe', accent: false },
+    { label: 'Reactive Forms', accent: false },
   ];
 
   readonly features: FeatureCard[] = [
     {
-      label: '01 / CONFIG-DRIVEN',
-      title: 'Object in, data out.',
-      body: 'Declare controls as data. The engine builds the FormGroup and renders every input for you.',
+      label: '01. SCHEMA-DRIVEN',
+      title: 'JSON in, form out.',
+      body: 'Declare controls as a config. The engine builds the whole Reactive Form for you.',
       variant: 'teal',
     },
     {
-      label: '02 / SIGNAL-REACTIVE',
+      label: '02. SIGNAL-REACTIVE',
       title: 'Reads like a signal.',
-      body: 'Form value and validity are signals. Read them in templates, computeds and effects. No subscriptions, no Zone.js.',
+      body: 'Form value and validity are signals. Read them in templates, computeds and effects. No subscriptions.',
       variant: 'dark',
     },
     {
-      label: '03 / VALIDATION',
-      title: 'Rules that render.',
-      body: 'required, minLength, pattern, custom — with messages placed automatically or replaced by your components.',
+      label: '03. BUILT-IN TOOLS',
+      title: 'Utilities ready to use.',
+      body: 'Validation, with messages placed automatically. Conditional visibility. Hints. Themes.',
       variant: 'cream',
     },
     {
-      label: '04 / FLEXIBILITY',
-      title: 'Fields that react.',
-      body: 'Visibility, validators, errors, hints dictated by your rules.',
+      label: '04. CUSTOMIZATION',
+      title: 'Plug in your components.',
+      body: 'Pass in your own components as errors or hints. Style the form as you wish. No irritating overrides.',
       variant: 'dark',
     },
   ];

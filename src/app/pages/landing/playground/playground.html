@@ -9,17 +9,37 @@
   </div>
 
   <div class="pf-split">
-    <!-- left: schema source -->
+    <!-- left: editable JSON schema -->
     <div class="pf-source">
-      <app-code-block [code]="source" language="typescript" />
+      <div class="pf-source__label">
+        <span>FormSchema</span>
+        <span class="pf-source__rule"></span>
+        <span class="pf-source__hint">edit to update live</span>
+      </div>
+      <textarea
+        class="pf-editor"
+        [value]="jsonSource()"
+        (input)="onSourceChange($any($event.target).value)"
+        spellcheck="false"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+      ></textarea>
     </div>
 
-    <!-- right: rendered, live output (the real engine) -->
+    <!-- right: rendered, live output -->
     <div class="pf-output">
       <div class="pf-output__label">
         <span>Rendered output</span>
         <span class="pf-output__rule"></span>
       </div>
+
+      @if (parseError()) {
+        <div class="pf-error">
+          <span class="pf-error__tag">SyntaxError</span>
+          <pre class="pf-error__msg">{{ parseError() }}</pre>
+        </div>
+      }
 
       <forge-form-angular [schema]="schema()" (formSubmit)="onSubmit()" />
 

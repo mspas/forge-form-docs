@@ -1,29 +1,38 @@
-<header class="hd">
-  <div class="hd__inner">
-    <a class="hd__brand" routerLink="/" aria-label="forge-form home">
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__brand" routerLink="/" aria-label="forge-form home">
       <app-logo [width]="34" [height]="21" />
-      <span class="hd__wordmark">forge-form</span>
-      <span class="hd__pill">v1.0</span>
+      <span class="site-header__wordmark">ForgeForm</span>
+      @if (meta(); as m) {
+        <span class="site-header__version-badge">v{{ m.version }}</span>
+      }
     </a>
 
-    <nav class="hd__nav">
+    <nav class="site-header__nav">
+      <a routerLink="/docs" fragment="quick-start">Quick Start</a>
       <a routerLink="/docs">Docs</a>
-      <a routerLink="/" fragment="playground">Playground</a>
-      <a routerLink="/docs" fragment="public-api-surface-exports">Reference</a>
-      <a [href]="githubUrl" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a
+        [href]="githubUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="site-header__github"
+      >
+        <app-github-icon [size]="15" />
+        GitHub
+      </a>
     </nav>
 
-    <div class="hd__actions">
+    <div class="site-header__actions">
       <button
         type="button"
-        class="hd__code"
+        class="site-header__install-cmd"
         (click)="copyInstall()"
         [attr.aria-label]="'Copy install command'"
         [title]="copied() ? 'Copied!' : 'Click to copy'"
       >
         {{ copied() ? '✓ copied' : install }}
       </button>
-      <a routerLink="/docs" class="hd__cta">Get started</a>
+      <a routerLink="/docs" class="site-header__cta-btn">Get started</a>
     </div>
   </div>
 </header>
