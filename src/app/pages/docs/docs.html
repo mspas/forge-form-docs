@@ -6,8 +6,26 @@
     <span>{{ menuOpen() ? '✕' : '☰' }}</span> On this page
   </button>
 
+  <!-- dim backdrop behind the mobile drawer -->
+  <div
+    class="docs__backdrop"
+    [class.open]="menuOpen()"
+    (click)="toggleMenu()"
+    aria-hidden="true"
+  ></div>
+
   <aside class="docs__sidebar" [class.open]="menuOpen()">
-    <div class="docs__sidebar-heading">Contents</div>
+    <div class="docs__sidebar-heading">
+      <span>Contents</span>
+      <button
+        type="button"
+        class="docs__sidebar-close"
+        (click)="toggleMenu()"
+        aria-label="Close menu"
+      >
+        ✕
+      </button>
+    </div>
     <nav class="docs__sidebar-nav">
       @for (entry of toc(); track entry.id) {
         <a
