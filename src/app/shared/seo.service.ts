@@ -25,7 +25,12 @@ export class SeoService {
   private readonly doc = inject(DOCUMENT);
 
   update({ title, description, path, image }: SeoData): void {
-    const url = `${SITE_URL}/${path}`.replace(/\/$/, '') || SITE_URL;
+    // Always use a trailing slash. GitHub Pages serves each prerendered route
+    // from `<path>/index.html` and 301-redirects the slash-less URL to the
+    // trailing-slash one, so the canonical/og:url must point at the form that
+    // resolves with 200 — otherwise Googlebot follows canonical -> redirect ->
+    // canonical and reports a redirect error.
+    const url = `${SITE_URL}/${path}`.replace(/\/+$/, '') + '/';
     const img = this.absolute(image ?? '/og-image.png');
 
     this.title.setTitle(title);
