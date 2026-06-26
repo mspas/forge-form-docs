@@ -40,6 +40,14 @@
     }
   }
 
+  &__subtitle {
+    font: 500 clamp(17px, 2.4vw, 22px)/1.4 var(--font-body);
+    color: var(--text-muted);
+    text-align: center;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
   &__row {
     display: flex;
     gap: 32px;
@@ -50,7 +58,7 @@
   }
 
   &__lead {
-    font: 400 21px/1.5 var(--font-body);
+    font: 400 18px/1.5 var(--font-body);
     color: var(--text-muted);
     margin: 0;
     max-width: 440px;

@@ -33,7 +33,7 @@ export class Landing {
 
   constructor() {
     inject(SeoService).update({
-      title: 'ForgeForm - Schema-based forms for Angular 21+',
+      title: 'ForgeForm - Schema-based forms library for Angular 21+',
       description:
         'ForgeForm turns a plain TypeScript schema into a fully-wired Angular form - FormGroup, signals, validation, hints, error messages and conditional fields. No boilerplate.',
       path: '',
@@ -52,7 +52,7 @@ export class Landing {
     {
       label: '01. SCHEMA-DRIVEN',
       title: 'JSON in, form out.',
-      body: 'Declare controls as a config. The engine builds the whole Reactive Form for you.',
+      body: 'Declare your controls as a TypeScript schema. The engine builds the whole Angular Reactive Form for you.',
       variant: 'teal',
     },
     {
@@ -64,7 +64,7 @@ export class Landing {
     {
       label: '03. BUILT-IN TOOLS',
       title: 'Utilities ready to use.',
-      body: 'Validation, with messages placed automatically. Conditional visibility. Hints. Themes.',
+      body: 'Schema-driven validation, with error messages placed automatically. Conditional field visibility. Hints. Themes.',
       variant: 'cream',
     },
     {
