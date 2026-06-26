@@ -30,6 +30,10 @@
   &__wordmark {
     font: 700 19px var(--font-display);
     letter-spacing: -0.01em;
+
+    @media (max-width: 720px) {
+      display: none;
+    }
   }
 
   &__version-badge {
@@ -70,6 +74,26 @@
     display: flex;
     gap: 12px;
     align-items: center;
+  }
+
+  &__mobile-links {
+    display: none;
+
+    @media (max-width: 720px) {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      a {
+        display: inline-flex;
+        color: var(--text-muted);
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: var(--text-body);
+        }
+      }
+    }
   }
 
   &__install-cmd {

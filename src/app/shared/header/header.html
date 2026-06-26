@@ -32,6 +32,24 @@
     </nav>
 
     <div class="site-header__actions">
+      <div class="site-header__mobile-links">
+        <a
+          [href]="githubUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+        >
+          <app-github-icon [size]="20" />
+        </a>
+        <a
+          [href]="npmUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="npm"
+        >
+          <app-npm-icon [size]="20" />
+        </a>
+      </div>
       <button
         type="button"
         class="site-header__install-cmd"
