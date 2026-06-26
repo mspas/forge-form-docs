@@ -1,6 +1,6 @@
 # @forge-form/angular - Getting Started
 
-**Version:** 1.1.0 · **License:** MIT
+**Version:** 1.1.1 · **License:** MIT
 
 ## Table of Contents
 

@@ -6,8 +6,13 @@
 .landing {
   --max: 1320px;
   --px: 48px;
+  --section-py: 64px; /* shared vertical padding for every section */
   background: var(--bg);
   overflow: hidden;
+
+  @media (max-width: 860px) {
+    --section-py: 40px;
+  }
 
   @media (max-width: 560px) {
     --px: 22px;
@@ -26,7 +31,7 @@
   position: relative;
   max-width: var(--max);
   margin: 0 auto;
-  padding: 32px var(--px);
+  padding: var(--section-py) var(--px);
 
   &__title {
     font: 700 clamp(58px, 9.4vw, 102px) / 0.9 var(--font-display);
@@ -127,15 +132,13 @@
 .features {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 64px var(--px);
+  padding: var(--section-py) var(--px);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 
   @media (max-width: 860px) {
     grid-template-columns: 1fr;
-    padding-top: 32px;
-    padding-bottom: 32px;
   }
 }
 
@@ -204,7 +207,7 @@
 .playground-section {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 8px var(--px) 64px;
+  padding: var(--section-py) var(--px);
 
   &__header {
     display: flex;
@@ -234,6 +237,119 @@
   }
 }
 
+/* ============================= FAQ ============================= */
+.faq {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: var(--section-py) var(--px);
+
+  &__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  &__title {
+    font: 700 40px/1 var(--font-display);
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--text-strong);
+  }
+  &__description {
+    font: 500 16px var(--font-body);
+    color: var(--text-muted);
+    max-width: 380px;
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--line-3);
+    border-radius: 20px;
+    background: var(--surface-card);
+    overflow: hidden;
+  }
+}
+
+.faq-item {
+  & + & {
+    border-top: 1px solid var(--line-3);
+  }
+
+  &__heading {
+    margin: 0;
+    font: inherit;
+  }
+
+  &__question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-strong);
+    font: 600 19px/1.4 var(--font-display);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 560px) {
+      padding: 20px;
+      font-size: 17px;
+    }
+  }
+
+  &__icon {
+    flex: none;
+    font: 300 26px/1 var(--font-mono);
+    color: var(--accent);
+    transition: transform 0.2s ease;
+  }
+  &--open &__icon {
+    transform: rotate(45deg);
+  }
+
+  /* max-height collapse keeps the answer in the DOM (prerendered and crawlable
+     even while collapsed) - just clipped to 0 height until opened. */
+  &__answer-wrapper {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+  &--open &__answer-wrapper {
+    max-height: 420px;
+  }
+
+  &__answer {
+    margin: 0;
+    padding: 0 28px 26px;
+    font: 400 16px/1.6 var(--font-body);
+    color: var(--text-muted);
+    max-width: 760px;
+
+    @media (max-width: 560px) {
+      padding: 0 20px 22px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item__answer-wrapper,
+  .faq-item__icon {
+    transition: none;
+  }
+}
+
 /* ========================== CTA BAND ========================== */
 .cta {
   background: var(--accent);
@@ -242,7 +358,7 @@
   &__inner {
     max-width: var(--max);
     margin: 0 auto;
-    padding: 64px var(--px);
+    padding: var(--section-py) var(--px);
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -60,6 +60,39 @@
     </div>
   </section>
 
+  <!-- ============================= FAQ ============================= -->
+  <section class="faq" id="faq">
+    <div class="faq__header">
+      <h2 class="faq__title">FAQ.</h2>
+      <span class="faq__description">
+        Quick answers about ForgeForm - what it is, how it compares, and what you
+        need to get started.
+      </span>
+    </div>
+
+    <ul class="faq__list">
+      @for (item of faqs; track item.question; let i = $index) {
+        <li class="faq-item" [class.faq-item--open]="openFaq() === i">
+          <h3 class="faq-item__heading">
+            <button
+              type="button"
+              class="faq-item__question"
+              [attr.aria-expanded]="openFaq() === i"
+              [attr.aria-controls]="'faq-answer-' + i"
+              (click)="toggleFaq(i)"
+            >
+              <span class="faq-item__question-text">{{ item.question }}</span>
+              <span class="faq-item__icon" aria-hidden="true">+</span>
+            </button>
+          </h3>
+          <div class="faq-item__answer-wrapper" [id]="'faq-answer-' + i" role="region">
+            <p class="faq-item__answer">{{ item.answer }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+
   <!-- ========================== CTA BAND ========================== -->
   <section class="cta">
     <div class="cta__inner">
