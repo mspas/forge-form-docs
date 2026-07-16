@@ -1,33 +1,46 @@
 .site-footer {
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: 32px var(--pad-x);
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--line-1);
+  border-top: 1px solid var(--line-soft);
+  margin-top: 40px;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 44px var(--pad-x);
+  }
 
   &__brand {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     color: var(--text-faint);
-    font: 600 13px var(--font-mono);
+    font: 500 13px var(--font-mono);
   }
 
   &__links {
     display: flex;
-    gap: 24px;
+    gap: 26px;
     flex-wrap: wrap;
-    font: 500 13.5px var(--font-body);
+    font: 500 14px var(--font-body);
     color: var(--text-dim);
 
     a {
       transition: color 0.15s ease;
+
       &:hover {
-        color: var(--text-body);
+        color: var(--text);
       }
     }
+  }
+
+  &__tagline {
+    flex-basis: 100%;
+    margin: 0;
+    font: 500 12.5px var(--font-mono);
+    color: var(--text-faint);
   }
 }

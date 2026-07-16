@@ -1,282 +1,530 @@
-/* Landing page - local layout vars (1320/48, wider than docs). */
+/* Landing page - restructured to the new design mockup.
+   Local layout vars mirror the mockup (1200 / 28). */
 :host {
   display: block;
 }
 
 .landing {
-  --max: 1320px;
-  --px: 48px;
-  --section-py: 64px; /* shared vertical padding for every section */
-  background: var(--bg);
-  overflow: hidden;
-
-  @media (max-width: 860px) {
-    --section-py: 40px;
-  }
+  --max: 1200px;
+  --px: 28px;
 
   @media (max-width: 560px) {
-    --px: 22px;
+    --px: 20px;
   }
 }
 
-.accent {
-  color: var(--accent);
+/* ===========================================================================
+   Section shell - every section shares one width, padding and height so they
+   read as equal panels. The sticky header always covers the top --header-h of
+   the viewport, so a section fills the screen at that much less than 100svh.
+   svh (not vh) keeps the panel clear of mobile browser chrome. min-height lets
+   a section grow past a screen when its content needs it.
+   =========================================================================== */
+.hero,
+.features,
+.quickstart,
+.faq {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--px);
+  min-height: calc(100svh - var(--header-h));
+
+  @media (max-width: 900px) {
+    padding-block: 48px;
+  }
+}
+
+/* ===========================================================================
+   Shared: window/code card (used by the hero preview and quick-start)
+   =========================================================================== */
+.code-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--bevel), 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+
+  &__chrome {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 15px;
+    background: var(--bg-sunken);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  &__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+
+  &__name {
+    margin-left: 8px;
+    font: 12px var(--font-mono);
+    color: var(--text-faint);
+  }
+
+  &__chrome--plain &__name {
+    margin-left: 0;
+  }
+
+  &__body {
+    padding: 16px 18px;
+    background: var(--bg-sunken);
+    overflow-x: auto;
+  }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 18px;
+    background: var(--surface);
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  &__divider-label {
+    font: 600 11px var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
+  &__divider-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--line-soft);
+  }
+
+  &__form {
+    padding: 20px 18px;
+  }
 }
 
 /* ============================= HERO ============================= */
 .hero {
-  display: flex;
-  gap: 24px;
-  flex-direction: column;
-  position: relative;
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: var(--section-py) var(--px);
+  display: grid;
+  grid-template-columns: 1.02fr 0.98fr;
+  gap: 60px;
+  align-items: center;
+  align-content: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  /* The install row is nowrap, so without this the column's min-content is the
+     full command and the track refuses to shrink below ~322px. */
+  &__intro {
+    min-width: 0;
+  }
+
+  &__eyebrow {
+    margin: 0 0 22px;
+    font: 600 12.5px var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
 
   &__title {
-    font: 700 clamp(58px, 9.4vw, 102px) / 0.9 var(--font-display);
-    letter-spacing: -0.035em;
-    margin: 0;
-    color: var(--text-strong);
-    text-align: center;
-
-    @media (max-width: 860px) {
-      letter-spacing: -0.02em;
-    }
+    margin: 0 0 22px;
+    font: 800 64px/1 var(--font-display);
+    letter-spacing: -0.03em;
+    color: var(--text);
   }
 
-  &__subtitle {
-    font: 500 clamp(17px, 2.4vw, 22px)/1.4 var(--font-body);
-    color: var(--text-muted);
-    text-align: center;
-    letter-spacing: -0.01em;
-    margin: 0;
-  }
-
-  &__row {
-    display: flex;
-    gap: 32px;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-top: 32px;
+  &__title-accent {
+    color: var(--accent);
+    font-style: italic;
   }
 
   &__lead {
-    font: 400 18px/1.5 var(--font-body);
-    color: var(--text-muted);
-    margin: 0;
-    max-width: 440px;
-  }
-}
+    margin: 0 0 30px;
+    max-width: 46ch;
+    font: 400 18px/1.6 var(--font-body);
+    color: var(--text-dim);
 
-/* ========================== INSTALL BUTTON ========================== */
-.install-btn {
-  font: 700 16px var(--font-mono);
-  color: var(--accent-ink);
-  background: var(--accent);
-  border: none;
-  border-radius: 14px;
-  padding: 16px 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-  transition: filter 0.15s ease;
-  &:hover {
-    filter: brightness(1.06);
+    code {
+      font: 0.85em var(--font-mono);
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid var(--line-soft);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
   }
 
-  &__sigil {
-    opacity: 0.55;
-  }
-
-  @media (max-width: 560px) {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* ======================= COMPATIBILITY STRIP ======================= */
-.compat {
-  border-top: 1px solid var(--line-1);
-  border-bottom: 1px solid var(--line-1);
-  background: var(--bg-band);
-  margin-top: 16px;
-
-  &__content {
-    max-width: var(--max);
-    margin: 0 auto;
-    padding: 16px var(--px);
+  &__install {
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    font: 600 13px var(--font-mono);
-    color: var(--text-faint);
+    align-items: stretch;
+    max-width: 400px;
+    margin: 0 0 28px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
   }
-}
 
-.chip {
-  border: 1px solid var(--line-3);
-  border-radius: 6px;
-  padding: 4px 12px;
-  &--accent {
+  &__install-cmd {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 13px 15px;
+    font: 14px var(--font-mono);
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    /* Tighten just enough to keep the whole command visible on narrow
+       phones - it ellipsises rather than wraps, and it's what people copy. */
+    @media (max-width: 560px) {
+      gap: 8px;
+      padding: 12px;
+      font-size: 13px;
+    }
+  }
+
+  &__install-sigil {
     color: var(--accent);
   }
-}
 
-/* ========================= FEATURE CARDS ========================= */
-.features {
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: var(--section-py) var(--px);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  &__install-copy {
+    flex: none;
+    border: none;
+    border-left: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text-dim);
+    font: 600 12px var(--font-mono);
+    padding: 0 16px;
+    cursor: pointer;
+    transition: color 0.16s ease;
 
-  @media (max-width: 860px) {
-    grid-template-columns: 1fr;
+    &:hover {
+      color: var(--accent-2);
+    }
+
+    @media (max-width: 560px) {
+      padding: 0 12px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+
+    @media (max-width: 1000px) {
+      justify-content: center;
+    }
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 7px;
+    cursor: pointer;
+    font: 600 15px var(--font-body);
+    transition: transform 0.16s ease, filter 0.16s ease,
+      border-color 0.16s ease;
+
+    &--solid {
+      font-weight: 700;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 13px 24px;
+
+      &:hover {
+        filter: brightness(1.08);
+        transform: translateY(-1px);
+      }
+    }
+
+    &--outline {
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--line);
+      padding: 12px 22px;
+
+      &:hover {
+        border-color: var(--accent-2);
+      }
+    }
+  }
+
+  &__meta {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 30px 0 0;
+    padding: 0;
+    font: 13px var(--font-mono);
+    color: var(--text-faint);
+
+    @media (max-width: 1000px) {
+      justify-content: center;
+    }
+  }
+
+  &__meta-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 16px;
+
+    &::before {
+      content: '○';
+      color: var(--accent-2);
+    }
   }
 }
 
-.feature-card {
-  border-radius: 20px;
-  padding: 32px;
-  min-height: 210px;
+/* ============================ FEATURES ============================ */
+.features {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
-
-  &__label {
-    font: 700 15px var(--font-mono);
-  }
-  &__title {
-    font: 700 30px var(--font-display);
-    margin: 0 0 8px;
-  }
-  &__body {
-    font: 500 16px/1.55 var(--font-body);
-    margin: 0;
-  }
-
-  &--teal {
-    background: var(--accent);
-    color: var(--accent-ink);
-    .feature-card__label,
-    .feature-card__title {
-      color: var(--accent-ink);
-    }
-    .feature-card__body {
-      opacity: 0.78;
-    }
-  }
-  &--dark {
-    background: var(--surface-card);
-    border: 1px solid var(--line-3);
-    color: var(--text-body);
-    .feature-card__label {
-      color: var(--accent);
-    }
-    .feature-card__title {
-      color: var(--text-strong);
-    }
-    .feature-card__body {
-      color: var(--text-dim);
-    }
-  }
-  &--cream {
-    background: var(--cream);
-    color: var(--cream-title);
-    .feature-card__label {
-      color: var(--accent-dark);
-    }
-    .feature-card__title {
-      color: var(--cream-title);
-    }
-    .feature-card__body {
-      color: var(--cream-text);
-    }
-  }
-}
-
-/* ========================== PLAYGROUND SECTION ========================== */
-.playground-section {
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: var(--section-py) var(--px);
+  justify-content: center;
 
   &__header {
     display: flex;
-    align-items: flex-end;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 16px;
     flex-wrap: wrap;
-    margin-bottom: 32px;
+    gap: 16px;
+    margin-bottom: 38px;
   }
+
   &__title {
-    font: 700 40px/1 var(--font-display);
-    letter-spacing: -0.02em;
     margin: 0;
-    color: var(--text-strong);
+    max-width: 16ch;
+    font: 700 clamp(28px, 3.4vw, 40px) var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--text);
   }
-  &__description {
-    font: 500 16px var(--font-body);
-    color: var(--text-muted);
-    max-width: 380px;
+
+  &__intro {
+    margin: 0;
+    max-width: 38ch;
+    font: 15px/1.5 var(--font-body);
+    color: var(--text-dim);
   }
-  &__frame {
-    border: 2px solid var(--accent);
-    border-radius: 20px;
-    padding: 8px;
-    background: var(--bg);
-    box-shadow: 0 40px 80px -40px rgba(31, 191, 166, 0.4);
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.feature {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  /* A grid item's default min-width:auto floors the track at the card's
+     min-content width - here the widest code line (~575px), which held the
+     single-column grid open below 596px and scrolled the whole page. The code
+     block scrolls itself, so the card is free to shrink. */
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 26px 24px;
+  box-shadow: var(--bevel), 0 14px 32px -22px rgba(0, 0, 0, 0.9);
+
+  @media (max-width: 900px) {
+    grid-column: auto;
+  }
+
+  &--wide {
+    grid-column: span 4;
+    justify-content: space-between;
+
+    @media (max-width: 900px) {
+      grid-column: auto;
+    }
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__eyebrow {
+    font: 600 12px var(--font-mono);
+    letter-spacing: 0.08em;
+
+    &--ember {
+      color: var(--accent);
+    }
+    &--quench {
+      color: var(--accent-2);
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font: 700 20px var(--font-display);
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  &--wide &__title {
+    font-size: 22px;
+  }
+
+  &__body {
+    margin: 0;
+    max-width: 48ch;
+    font: 14.5px/1.55 var(--font-body);
+    color: var(--text-dim);
+  }
+
+  &__code {
+    background: var(--bg-sunken);
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 15px 16px;
+    overflow-x: auto;
+  }
+
+  &__mono {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--bg-sunken);
+    border-radius: 6px;
+    padding: 11px 13px;
+    font: 12.5px/1.6 var(--font-mono);
+    color: var(--accent-2);
+  }
+}
+
+/* =========================== QUICK START =========================== */
+.quickstart {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 44px;
+  align-items: start;
+  align-content: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  &__eyebrow {
+    margin: 0 0 16px;
+    font: 600 12.5px var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
+  &__title {
+    margin: 0 0 16px;
+    font: 700 clamp(26px, 3vw, 36px) var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  &__lead {
+    margin: 0 0 22px;
+    max-width: 44ch;
+    font: 15.5px/1.65 var(--font-body);
+    color: var(--text-dim);
+  }
+
+  &__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__step {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font: 14px/1.5 var(--font-body);
+    color: var(--text-dim);
+  }
+
+  &__step-n {
+    flex: none;
+    font: 700 14px var(--font-mono);
+    color: var(--accent);
+  }
+
+  &__link {
+    display: inline-block;
+    margin-top: 24px;
+    font: 600 14.5px var(--font-body);
+    color: var(--accent-2);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--accent);
+    }
   }
 }
 
 /* ============================= FAQ ============================= */
 .faq {
-  max-width: var(--max);
-  margin: 0 auto;
-  padding: var(--section-py) var(--px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   &__header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 32px;
+    margin-bottom: 26px;
   }
+
+  &__eyebrow {
+    margin: 0 0 12px;
+    font: 600 12.5px var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+  }
+
   &__title {
-    font: 700 40px/1 var(--font-display);
-    letter-spacing: -0.02em;
     margin: 0;
-    color: var(--text-strong);
-  }
-  &__description {
-    font: 500 16px var(--font-body);
-    color: var(--text-muted);
-    max-width: 380px;
+    font: 700 clamp(28px, 3.4vw, 42px) var(--font-display);
+    letter-spacing: -0.02em;
+    color: var(--text);
   }
 
   &__list {
     list-style: none;
     margin: 0;
     padding: 0;
-    border: 1px solid var(--line-3);
-    border-radius: 20px;
-    background: var(--surface-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
     overflow: hidden;
+    box-shadow: var(--bevel), 0 14px 32px -22px rgba(0, 0, 0, 0.9);
   }
 }
 
 .faq-item {
   & + & {
-    border-top: 1px solid var(--line-3);
+    border-top: 1px solid var(--line-soft);
   }
 
   &__heading {
@@ -290,31 +538,33 @@
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    padding: 24px 28px;
+    padding: 22px 26px;
     background: transparent;
     border: none;
     cursor: pointer;
     text-align: left;
-    color: var(--text-strong);
-    font: 600 19px/1.4 var(--font-display);
+    color: var(--text);
+    font: 600 17px/1.4 var(--font-display);
+    letter-spacing: -0.01em;
     transition: color 0.15s ease;
 
     &:hover {
-      color: var(--accent);
+      color: var(--accent-2);
     }
 
     @media (max-width: 560px) {
-      padding: 20px;
-      font-size: 17px;
+      padding: 18px 20px;
+      font-size: 16px;
     }
   }
 
   &__icon {
     flex: none;
-    font: 300 26px/1 var(--font-mono);
+    font: 300 24px/1 var(--font-mono);
     color: var(--accent);
     transition: transform 0.2s ease;
   }
+
   &--open &__icon {
     transform: rotate(45deg);
   }
@@ -326,19 +576,20 @@
     max-height: 0;
     transition: max-height 0.3s ease;
   }
+
   &--open &__answer-wrapper {
-    max-height: 420px;
+    max-height: 460px;
   }
 
   &__answer {
     margin: 0;
-    padding: 0 28px 26px;
-    font: 400 16px/1.6 var(--font-body);
-    color: var(--text-muted);
+    padding: 0 26px 24px;
     max-width: 760px;
+    font: 400 15px/1.65 var(--font-body);
+    color: var(--text-dim);
 
     @media (max-width: 560px) {
-      padding: 0 20px 22px;
+      padding: 0 20px 20px;
     }
   }
 }
@@ -347,73 +598,5 @@
   .faq-item__answer-wrapper,
   .faq-item__icon {
     transition: none;
-  }
-}
-
-/* ========================== CTA BAND ========================== */
-.cta {
-  background: var(--accent);
-  color: var(--accent-ink);
-
-  &__inner {
-    max-width: var(--max);
-    margin: 0 auto;
-    padding: var(--section-py) var(--px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 24px;
-  }
-  &__title {
-    font: 700 clamp(34px, 5vw, 64px) / 1 var(--font-display);
-    letter-spacing: -0.025em;
-    margin: 0;
-  }
-  &__install-code {
-    font: 700 clamp(18px, 3vw, 32px) var(--font-mono);
-    background: var(--accent-ink);
-    color: var(--accent);
-    border-radius: 14px;
-    padding: 16px 32px;
-  }
-  &__buttons {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  &__btn {
-    font: 700 16px var(--font-display);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: filter 0.15s ease, background 0.15s ease, color 0.15s ease;
-
-    &--github {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* transparent border on solid keeps both buttons the same box size */
-    &--solid {
-      color: var(--text-body);
-      background: var(--accent-ink);
-      border: 2px solid transparent;
-      padding: 16px 32px;
-      &:hover {
-        filter: brightness(1.25);
-      }
-    }
-    &--outline {
-      color: var(--accent-ink);
-      background: transparent;
-      border: 2px solid var(--accent-ink);
-      padding: 16px 32px;
-      &:hover {
-        background: var(--accent-ink);
-        color: var(--accent);
-      }
-    }
   }
 }

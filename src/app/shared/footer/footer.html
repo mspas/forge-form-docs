@@ -1,13 +1,24 @@
-<div class="site-footer">
-  <div class="site-footer__brand">
-    <app-logo [width]="26" [height]="16" />
-    <span>ForgeForm · MIT licensed</span>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <app-logo [width]="30" [height]="18" />
+      <span>
+        &#64;forge-form/angular
+        @if (meta(); as m) {
+          · v{{ m.version }}
+        }
+      </span>
+    </div>
+
+    <nav class="site-footer__links">
+      <a routerLink="/docs">Docs</a>
+      <a routerLink="/playground">Playground</a>
+      <a [href]="githubUrl" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a [href]="npmUrl" target="_blank" rel="noopener noreferrer">npm</a>
+    </nav>
+
+    <p class="site-footer__tagline">
+      Quick Angular forms without boilerplate.
+    </p>
   </div>
-  <div class="site-footer__links">
-    <a routerLink="/docs">Docs</a>
-    <a [href]="githubUrl" target="_blank" rel="noopener noreferrer">GitHub</a>
-    <a [href]="npmUrl" target="_blank" rel="noopener noreferrer">npm</a>
-    <a routerLink="/docs" fragment="installation--peer-dependencies">Changelog</a>
-    <a [href]="githubUrl" target="_blank" rel="noopener noreferrer">Discord</a>
-  </div>
-</div>
+</footer>

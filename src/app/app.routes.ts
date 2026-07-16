@@ -12,5 +12,10 @@ export const routes: Routes = [
     path: 'docs',
     loadComponent: () => import('./pages/docs/docs').then((m) => m.Docs),
   },
+  {
+    path: 'playground',
+    loadComponent: () =>
+      import('./pages/playground/playground').then((m) => m.Playground),
+  },
   { path: '**', redirectTo: '' },
 ];

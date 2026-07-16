@@ -5,57 +5,46 @@
 @use '../node_modules/@forge-form/angular/styles/index.scss';
 
 :root {
-  /* ---- surfaces ---- */
-  --bg: #0c0b0a;
-  --bg-band: #0a0908;
-  --surface-card: #14110d;
-  --surface-code: #100e0c;
+  /* ---- surfaces: an elevation scale, darkest (recessed) to lightest ---- */
+  --bg-sunken: #0a0d11; /* code blocks, chrome bars */
+  --bg: #0f1216; /* page */
+  --surface: #161b21; /* cards */
+  --surface-2: #1c232b; /* raised on a card: inputs, chips */
 
-  /* ---- text ---- */
-  --text-strong: #f5f1e9;
-  --text-body: #ede7dd;
-  --text-muted: #a89e8e;
-  --text-dim: #9a9080;
-  --text-faint: #6e665a;
+  /* ---- text: primary / secondary / tertiary ---- */
+  --text: #e7e4dd;
+  --text-dim: #98a2ad;
+  --text-faint: #69727c;
 
-  /* ---- borders ---- */
-  --line-1: #1a1611;
-  --line-3: #221c15;
-  --line-4: #2a2218;
+  /* ---- lines ---- */
+  --line-soft: color-mix(in srgb, var(--text) 12%, transparent);
+  --line: #333d4a;
+  --line-strong: #46515f;
 
-  /* ---- accent ---- */
-  --accent: #1fbfa6;
-  --accent-dark: #0e9b83;
-  --accent-ink: #07140f;
-  --accent-border: #234039;
-  --accent-tint: #0e1b18;
+  /* ---- 1px top bevel: reads as depth on dark cards ---- */
+  --bevel: inset 0 1px 0 color-mix(in srgb, var(--text) 4.5%, transparent);
 
-  /* ---- cream (expressive card) ---- */
-  --cream: #ede7dd;
-  --cream-title: #16120f;
-  --cream-text: #5e564b;
+  /* ---- accents: one ember (primary), one quench (secondary) ---- */
+  --accent: #FFE45E;
+  --accent-2: #C6CAED;
 
   /* ---- status ---- */
-  --error: #e8765a;
-  --warn: #e0b23c;
+  --danger: #ff845e;
 
-  /* ---- code tokens ---- */
-  --code-string: #d8b27a;
-  --code-type: #7fd8c9;
-  --code-keyword: #c792ea;
-  --code-inline: #c8beae;
-  --code-comment: var(--text-faint); /* same tone as faintest body text */
-  --code-fn: var(--accent);
-  --code-punct: #8e8579;
+  /* ---- code: only the hues the palette doesn't already cover ---- */
+  --code-inline: #e7e4dd;
+  --code-string: #f3e395;
+  --code-number: #b7d77a;
 
   /* ---- type families ---- */
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-body: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   /* ---- layout ---- */
   --content-max: 1280px;
   --pad-x: 44px;
+  --header-h: 66px;
 }
 
 @media (max-width: 620px) {
@@ -75,7 +64,7 @@ html {
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--text-body);
+  color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -83,7 +72,7 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--bg);
 }
 
 a {
@@ -94,14 +83,14 @@ a {
 /* thin dark scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--line-4) transparent;
+  scrollbar-color: var(--line-strong) transparent;
 }
 *::-webkit-scrollbar {
   width: 9px;
   height: 9px;
 }
 *::-webkit-scrollbar-thumb {
-  background: var(--line-4);
+  background: var(--line-strong);
   border-radius: 999px;
 }
 
@@ -132,24 +121,15 @@ a {
 }
 
 /* ===========================================================================
-   Playground - dark theme override for the real <forge-form-angular> form.
-   The library exposes .forge-form-* hooks; we restyle them to the mockup's
-   dark "rendered output" panel using the --pf-* tokens.
+   Hero preview + playground - dark theme for the real <forge-form-angular>.
+   The library exposes .forge-form-* hooks; we restyle them onto the palette.
    =========================================================================== */
 .pf-host {
-  --pf-bg: #16130f;
-  --pf-border: #2e2820;
-  --pf-input: #120f0c;
-  --pf-text: #ede7dd;
-  --pf-muted: #9a8f80;
-  --pf-accent: #1fbfa6;
-  --pf-error: #e8765a;
-
   .forge-form {
     font-family: var(--font-body);
     font-size: 14px;
     gap: 16px;
-    color: var(--pf-text);
+    color: var(--text);
   }
 
   .forge-form-group {
@@ -170,45 +150,63 @@ a {
 
   .forge-form-field-label {
     font: 600 12.5px var(--font-body);
-    color: var(--pf-text);
+    color: var(--text);
   }
 
   .forge-form-input,
   .forge-form-select {
     box-sizing: border-box;
     width: 100%;
-    background: var(--pf-input);
-    border: 1px solid var(--pf-border);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
     border-radius: 10px;
     padding: 12px;
-    color: var(--pf-text);
+    color: var(--text);
     font: 14px var(--font-body);
+    color-scheme: dark; /* dark native popups, spinners and caret */
     outline: none;
     transition: border-color 0.16s ease;
 
     &::placeholder {
-      color: var(--pf-muted);
+      color: var(--text-dim);
     }
     &:focus {
-      border-color: var(--pf-accent);
+      border-color: var(--accent-2);
+    }
+  }
+
+  /* Drop the OS chevron for one that matches the theme. The stroke is baked
+     into the data URI (SVG can't read CSS vars) and mirrors --text-dim. */
+  .forge-form-select {
+    appearance: none;
+    cursor: pointer;
+    padding-right: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2398a2ad' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    background-size: 14px;
+
+    option {
+      background: var(--surface-2);
+      color: var(--text);
     }
   }
 
   .forge-form-checkbox {
     width: 18px;
     height: 18px;
-    accent-color: var(--pf-accent);
+    accent-color: var(--accent);
     cursor: pointer;
   }
 
   .forge-form-hint {
     font: 12px var(--font-body);
-    color: var(--pf-muted);
+    color: var(--text-dim);
   }
 
   .forge-form-error {
     font: 12px var(--font-body);
-    color: var(--pf-error);
+    color: var(--danger);
     display: flex;
     gap: 4px;
 
@@ -220,8 +218,8 @@ a {
   .forge-form-button {
     align-self: flex-start;
     margin-top: 2px;
-    background: var(--pf-accent);
-    color: var(--accent-ink);
+    background: var(--accent);
+    color: var(--bg);
     font: 700 13.5px var(--font-body);
     letter-spacing: 0.01em;
     border: none;
@@ -234,8 +232,8 @@ a {
       filter: brightness(1.06);
     }
     &:disabled {
-      background: #2e2820;
-      color: var(--pf-muted);
+      background: var(--line);
+      color: var(--text-dim);
       cursor: not-allowed;
     }
   }
@@ -245,7 +243,7 @@ a {
    Markdown / docs content
    =========================================================================== */
 .markdown {
-  color: var(--text-body);
+  color: var(--text);
   font-size: 16px;
   line-height: 1.72;
 
@@ -254,7 +252,7 @@ a {
   h3,
   h4 {
     font-family: var(--font-display);
-    color: var(--text-strong);
+    color: var(--text);
     letter-spacing: -0.02em;
     scroll-margin-top: 96px;
     line-height: 1.15;
@@ -267,7 +265,7 @@ a {
     font-size: 28px;
     margin: 64px 0 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--line-3);
+    border-bottom: 1px solid var(--line);
   }
   h3 {
     font-size: 20px;
@@ -287,16 +285,16 @@ a {
   }
 
   strong {
-    color: var(--text-body);
+    color: var(--text);
     font-weight: 600;
   }
 
   a {
-    color: var(--accent);
+    color: var(--accent-2);
     border-bottom: 1px solid transparent;
     transition: border-color 0.15s ease;
     &:hover {
-      border-bottom-color: var(--accent);
+      border-bottom-color: var(--accent-2);
     }
 
     /* model-reference links wrap an inline code chip - fill it with the
@@ -312,7 +310,7 @@ a {
       &:hover code {
         background: var(--accent);
         border-color: var(--accent);
-        color: var(--accent-ink);
+        color: var(--bg);
       }
     }
   }
@@ -326,26 +324,26 @@ a {
     margin: 4px 0;
   }
   li::marker {
-    color: var(--accent);
+    color: var(--accent-2);
   }
 
   blockquote {
     margin: 16px 0;
     padding: 12px 16px;
     border-left: 3px solid var(--accent);
-    background: var(--accent-tint);
+    background: color-mix(in srgb, var(--accent) 13%, transparent);
     border-radius: 0 10px 10px 0;
-    color: var(--text-body);
+    color: var(--text);
 
     p {
       margin: 0;
-      color: var(--text-body);
+      color: var(--text);
     }
   }
 
   hr {
     border: none;
-    border-top: 1px solid var(--line-3);
+    border-top: 1px solid var(--line);
     margin: 32px 0;
   }
 
@@ -353,8 +351,8 @@ a {
   code {
     font: 0.86em var(--font-mono);
     color: var(--code-inline);
-    background: var(--surface-card);
-    border: 1px solid var(--line-3);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
     border-radius: 6px;
     padding: 2px 8px;
   }
@@ -363,8 +361,8 @@ a {
   pre {
     margin: 0 0 24px;
     padding: 16px;
-    background: var(--surface-code);
-    border: 1px solid var(--line-3);
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
     border-radius: 14px;
     overflow: auto;
     font: 13px/1.7 var(--font-mono);
@@ -390,12 +388,12 @@ a {
   td {
     text-align: left;
     padding: 8px 16px;
-    border: 1px solid var(--line-3);
+    border: 1px solid var(--line);
     vertical-align: top;
   }
   th {
-    background: var(--surface-card);
-    color: var(--text-strong);
+    background: var(--surface);
+    color: var(--text);
     font-family: var(--font-body);
     font-weight: 600;
     white-space: nowrap;
@@ -415,14 +413,14 @@ a {
 }
 .hljs-comment,
 .hljs-quote {
-  color: var(--code-comment);
+  color: var(--text-faint);
   font-style: italic;
 }
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-literal,
 .hljs-type {
-  color: var(--code-keyword);
+  color: var(--accent);
 }
 .hljs-string,
 .hljs-meta-string,
@@ -433,31 +431,31 @@ a {
 .hljs-title.function_,
 .hljs-section,
 .hljs-name {
-  color: var(--code-fn);
+  color: var(--accent-2);
 }
 .hljs-attr,
 .hljs-attribute,
 .hljs-property,
 .hljs-variable,
 .hljs-template-variable {
-  color: var(--code-type);
+  color: var(--accent-2);
 }
 .hljs-number,
 .hljs-symbol,
 .hljs-bullet {
-  color: var(--code-string);
+  color: var(--code-number);
 }
 .hljs-built_in,
 .hljs-class .hljs-title,
 .hljs-title.class_ {
-  color: var(--code-type);
+  color: var(--accent-2);
 }
 .hljs-punctuation,
 .hljs-operator {
-  color: var(--code-punct);
+  color: var(--text-faint);
 }
 .hljs-tag {
-  color: var(--code-punct);
+  color: var(--text-faint);
 }
 .hljs-doctag,
 .hljs-strong {

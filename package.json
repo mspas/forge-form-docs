@@ -20,7 +20,7 @@
     "@angular/platform-server": "^21.2.0",
     "@angular/router": "^21.2.0",
     "@angular/ssr": "^21.2.15",
-    "@forge-form/angular": "file:vendor/forge-form-angular-1.0.0.tgz",
+    "@forge-form/angular": "file:vendor/forge-form-angular-1.1.1.tgz",
     "express": "^5.1.0",
     "highlight.js": "^11.11.1",
     "marked": "^18.0.5",

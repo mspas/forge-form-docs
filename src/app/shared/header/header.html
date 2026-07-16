@@ -3,63 +3,53 @@
     <a class="site-header__brand" routerLink="/" aria-label="forge-form home">
       <app-logo [width]="34" [height]="21" />
       <span class="site-header__wordmark">ForgeForm</span>
-      @if (meta(); as m) {
-        <span class="site-header__version-badge">v{{ m.version }}</span>
-      }
     </a>
 
     <nav class="site-header__nav">
-      <a routerLink="/docs" fragment="quick-start">Quick Start</a>
-      <a routerLink="/docs">Docs</a>
+      <a routerLink="/docs" class="site-header__link">Docs</a>
+      <a routerLink="/playground" class="site-header__link">Playground</a>
+      <span class="site-header__divider" aria-hidden="true"></span>
       <a
         [href]="githubUrl"
         target="_blank"
         rel="noopener noreferrer"
-        class="site-header__github"
+        class="site-header__link site-header__link--icon"
       >
-        <app-github-icon [size]="15" />
+        <app-github-icon [size]="17" />
         GitHub
       </a>
       <a
         [href]="npmUrl"
         target="_blank"
         rel="noopener noreferrer"
-        class="site-header__github"
+        class="site-header__link"
       >
-        <app-npm-icon [size]="15" />
         npm
       </a>
     </nav>
 
-    <div class="site-header__actions">
-      <div class="site-header__mobile-links">
-        <a
-          [href]="githubUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-        >
-          <app-github-icon [size]="20" />
-        </a>
-        <a
-          [href]="npmUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="npm"
-        >
-          <app-npm-icon [size]="20" />
-        </a>
-      </div>
-      <button
-        type="button"
-        class="site-header__install-cmd"
-        (click)="copyInstall()"
-        [attr.aria-label]="'Copy install command'"
-        [title]="copied() ? 'Copied!' : 'Click to copy'"
+    <nav class="site-header__mobile">
+      <a routerLink="/docs" class="site-header__mobile-link">Docs</a>
+      <a routerLink="/playground" class="site-header__mobile-link">
+        Playground
+      </a>
+      <span class="site-header__divider" aria-hidden="true"></span>
+      <a
+        [href]="githubUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
       >
-        {{ copied() ? '✓ copied' : install }}
-      </button>
-      <a routerLink="/docs" class="site-header__cta-btn">Get started</a>
-    </div>
+        <app-github-icon [size]="20" />
+      </a>
+      <a
+        [href]="npmUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="npm"
+      >
+        <app-npm-icon [size]="20" />
+      </a>
+    </nav>
   </div>
 </header>

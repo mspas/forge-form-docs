@@ -2,9 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(14, 12, 10, 0.78);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line-1);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line-soft);
 
   &__inner {
     display: flex;
@@ -13,10 +13,11 @@
     gap: 24px;
     max-width: var(--content-max);
     margin: 0 auto;
-    padding: 16px var(--pad-x);
+    height: var(--header-h);
+    padding: 0 var(--pad-x);
 
     @media (max-width: 720px) {
-      padding: 16px 24px;
+      padding: 0 22px;
     }
   }
 
@@ -24,112 +25,81 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: var(--text-body);
+    color: var(--text);
   }
 
   &__wordmark {
-    font: 700 19px var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
     letter-spacing: -0.01em;
+    white-space: nowrap;
+
+    /* Below ~430px the wordmark, both nav labels and the icons can't share the
+       row - it gets flex-squished and wraps. The logo alone still links home. */
+    @media (max-width: 430px) {
+      display: none;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    font: 500 14.5px var(--font-body);
 
     @media (max-width: 720px) {
       display: none;
     }
   }
 
-  &__version-badge {
-    font: 600 11px var(--font-mono);
-    color: var(--accent);
-    border: 1px solid var(--accent-border);
-    background: var(--accent-tint);
-    border-radius: 6px;
-    padding: 4px 8px;
-  }
-
-  &__nav {
-    display: flex;
-    gap: 32px;
-    align-items: center;
-    font: 500 14.5px var(--font-body);
-    color: var(--text-muted);
-
-    a {
-      transition: color 0.15s ease;
-      &:hover {
-        color: var(--text-body);
-      }
-    }
-
-    @media (max-width: 1040px) {
-      display: none;
-    }
-  }
-
-  &__github {
+  &__link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    color: var(--text-dim);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &--icon {
+      gap: 7px;
+    }
   }
 
-  &__actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+  &__divider {
+    width: 1px;
+    height: 18px;
+    background: var(--line);
   }
 
-  &__mobile-links {
+  &__mobile {
     display: none;
 
     @media (max-width: 720px) {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 18px;
 
       a {
         display: inline-flex;
-        color: var(--text-muted);
+        color: var(--text-dim);
         transition: color 0.15s ease;
 
         &:hover {
-          color: var(--text-body);
+          color: var(--text);
         }
       }
     }
-  }
 
-  &__install-cmd {
-    font: 500 13px var(--font-mono);
-    color: var(--text-muted);
-    background: var(--surface-card);
-    border: 1px solid var(--line-3);
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition:
-      color 0.15s ease,
-      border-color 0.15s ease;
-
-    &:hover {
-      color: var(--text-body);
-      border-color: var(--line-4);
-    }
-
-    @media (max-width: 720px) {
-      display: none;
+    @media (max-width: 380px) {
+      gap: 14px;
     }
   }
 
-  &__cta-btn {
-    font: 700 14px var(--font-body);
-    color: var(--accent-ink);
-    background: var(--accent);
-    border: none;
-    border-radius: 9px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: filter 0.15s ease;
-
-    &:hover {
-      filter: brightness(1.06);
-    }
+  &__mobile-link {
+    font: 500 14.5px var(--font-body);
+    white-space: nowrap;
   }
 }

@@ -2,11 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
+  inject,
   signal,
   viewChild,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FormRendererComponent, FormSchema } from '@forge-form/angular';
 import { Subscription } from 'rxjs';
+import { Header } from '../../shared/header/header';
+import { Footer } from '../../shared/footer/footer';
+import { SeoService } from '../../shared/seo.service';
 
 const DEFAULT_JSON = JSON.stringify(
   {
@@ -53,7 +58,7 @@ const DEFAULT_JSON = JSON.stringify(
 
 @Component({
   selector: 'app-playground',
-  imports: [FormRendererComponent],
+  imports: [RouterLink, Header, Footer, FormRendererComponent],
   templateUrl: './playground.html',
   styleUrl: './playground.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,18 +68,30 @@ export class Playground {
   protected readonly parseError = signal<string | null>(null);
   protected readonly schema = signal<FormSchema>(JSON.parse(DEFAULT_JSON) as FormSchema);
   protected readonly value = signal<Record<string, unknown>>({});
+  protected readonly valid = signal(false);
   protected readonly submitted = signal(false);
 
   private readonly renderer = viewChild(FormRendererComponent);
   private sub?: Subscription;
 
   constructor() {
+    inject(SeoService).update({
+      title: 'ForgeForm Playground - Edit a FormSchema, see the form live',
+      description:
+        'Interactive ForgeForm playground: edit a FormSchema as JSON and watch the Angular form re-render live, with validation state and the typed form value updating as you type.',
+      path: 'playground',
+    });
+
     effect((onCleanup) => {
       const form = this.renderer()?.formSignal();
       this.sub?.unsubscribe();
       if (!form) return;
       this.value.set(form.value);
-      this.sub = form.valueChanges.subscribe(() => this.value.set(form.value));
+      this.valid.set(form.valid);
+      this.sub = form.valueChanges.subscribe(() => {
+        this.value.set(form.value);
+        this.valid.set(form.valid);
+      });
       onCleanup(() => this.sub?.unsubscribe());
     });
   }
@@ -107,5 +124,11 @@ export class Playground {
     const v = this.value();
     if (!v || Object.keys(v).length === 0) return '{}';
     return JSON.stringify(v);
+  }
+
+  /** Top-level control count of the last successfully parsed schema. */
+  protected get controlCount(): number {
+    const controls = this.schema().controls;
+    return Array.isArray(controls) ? controls.length : 0;
   }
 }

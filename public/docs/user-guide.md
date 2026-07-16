@@ -1,6 +1,8 @@
-# @forge-form/angular - Getting Started
+# @forge-form/angular - User Guide
 
 **Version:** 1.1.1 · **License:** MIT
+
+---
 
 ## Table of Contents
 
@@ -24,6 +26,22 @@
 10. [Custom Field Types](#custom-field-types)
 11. [Styling & Theming](#styling--theming)
 12. [Full Working Example](#full-working-example)
+13. [Known Limitations in 1.1.1](#known-limitations-in-111)
+
+---
+
+## Known Limitations in 1.1.1
+
+Before you build against this guide, a few parts of the API are **declared but not wired up**, and the visibility predicate runs **inverted** relative to its name. Each is verified against the shipped build and explained where it comes up:
+
+- **Custom field types don't work.** You are limited to `text`, `number`, `checkbox`, `select`. See [Custom Field Types](#custom-field-types).
+- **App-wide error message overrides don't work.** Set the message on the validator instead. See [Changing defaults app-wide](#changing-defaults-app-wide).
+- **`visibility.fn` returning `true` HIDES the field** (not shows it). See [Conditional Visibility](#conditional-visibility).
+- **`clearOnHide` does nothing** — hidden fields keep their value and still submit it.
+- **`FormSchema.id`** is accepted but never rendered.
+- **`labelOrientation` on a group** is ignored; set it per field or form-wide.
+
+Everything else in this guide — validators and their messages, hints, `value()` / `valid()`, `hideSubmitButton`, layout, theming, `updateOn` — behaves as described.
 
 ---
 
@@ -36,7 +54,7 @@ What this gives you:
 - **No form markup to write** - the structure lives in your schema, not your template.
 - **Reactive Forms power without the boilerplate** - Angular's reactive forms run under the hood; you never touch `FormGroup`/`FormControl` directly.
 - **Standalone** - just import the component. No `NgModule`, no app-wide setup for basic use.
-- **Extensible when you need it** - plug in your own field types, error components, and hint components.
+- **Extensible where it counts** - plug in your own error components and hint components. (Custom _field types_ are not usable in 1.1.1 - see [Custom Field Types](#custom-field-types).)
 
 Requires **Angular v21+**.
 
@@ -135,27 +153,29 @@ The root `FormSchema` is the object you pass to `[schema]`:
 ```ts
 interface FormSchema {
   controls: (GroupFieldSchema | ControlSchema)[]; // your fields and groups
-  id?: string;                                     // optional id on the <form>
-  updateOn?: 'change' | 'blur' | 'submit';         // default update strategy
-  options?: FormOptions;                           // layout + theme
+  id?: string; // accepted, but not applied in 1.1.1
+  updateOn?: 'change' | 'blur' | 'submit'; // default update strategy
+  options?: FormOptions; // layout + theme
 }
 ```
 
-| Property   | What it does                                                                 |
-| ---------- | --------------------------------------------------------------------------- |
-| `controls` | **Required.** The ordered list of fields and groups that make up the form.  |
-| `id`       | Sets the HTML `id` on the rendered `<form>` element.                         |
+| Property   | What it does                                                                  |
+| ---------- | ----------------------------------------------------------------------------- |
+| `controls` | **Required.** The ordered list of fields and groups that make up the form.    |
+| `id`       | **No effect in 1.1.1.** See the note below.                                   |
 | `updateOn` | When values/validation refresh by default - see [below](#when-values-update). |
-| `options`  | Form-wide layout and theme - see [layout options](#layout--sizing-options). |
+| `options`  | Form-wide layout and theme - see [layout options](#layout--sizing-options).   |
+
+> **`id` is never applied.** The property exists on the interface, but the rendered `<form>` only ever receives `class`, `formGroup`, and a submit handler — no `id` attribute reaches the DOM. If you need to target the form element (for a label, a test hook, or an external submit button), wrap `<forge-form-angular>` in a container of your own and target that instead.
 
 Form-level `options`:
 
 ```ts
 interface FormOptions {
-  orientation?: 'row' | 'column';      // direction top-level controls flow
+  orientation?: 'row' | 'column'; // direction top-level controls flow
   labelOrientation?: 'row' | 'column'; // label beside (row) or above (column) inputs
-  theme?: 'none' | 'default';          // 'default' applies the bundled visual theme
-  hideSubmitButton?: boolean;          // remove the built-in submit button
+  theme?: 'none' | 'default'; // 'default' applies the bundled visual theme
+  hideSubmitButton?: boolean; // remove the built-in submit button
 }
 ```
 
@@ -170,7 +190,7 @@ A group lays out several fields together in a row or column. Groups are **purely
 ```ts
 {
   type: 'group',
-  options: { orientation: 'row' }, // row | column, plus optional labelOrientation
+  options: { orientation: 'row' }, // row | column - the only option a group applies
   controls: [
     { type: 'text', controlName: 'firstName', label: 'First Name', options: { width: '250px' } },
     { type: 'text', controlName: 'lastName',  label: 'Last Name',  options: { width: '250px' } },
@@ -257,7 +277,7 @@ Both groups and individual fields accept layout `options`. Fields additionally a
 // On a group
 options: {
   orientation?: 'row' | 'column';      // direction children flow
-  labelOrientation?: 'row' | 'column'; // label beside vs. above inputs
+  labelOrientation?: 'row' | 'column'; // accepted by the type, but IGNORED on groups
 }
 
 // On a field
@@ -268,7 +288,9 @@ options: {
 }
 ```
 
-`labelOrientation` resolves most-specific-first: a field's own setting wins, then the form's, then the default. This lets you set a default at the form level and override individual fields.
+`labelOrientation` resolves most-specific-first: a field's own setting wins, then the form's, then the default (`column`).
+
+> **Groups do not participate in that chain.** Setting `labelOrientation` on a group is silently ignored — a group only ever applies its `orientation`. Fields resolve their label placement straight from **field → form → default**, skipping any group they happen to sit in. To give a group's fields a shared label placement, set `labelOrientation` on each field in it (or change the form-level default).
 
 ---
 
@@ -276,11 +298,11 @@ options: {
 
 `updateOn` controls when a field pushes its value and re-runs validation:
 
-| Value      | Updates…                                  |
-| ---------- | ----------------------------------------- |
-| `'change'` | on every keystroke / change               |
-| `'blur'`   | when the field loses focus                |
-| `'submit'` | only when the form is submitted           |
+| Value      | Updates…                        |
+| ---------- | ------------------------------- |
+| `'change'` | on every keystroke / change     |
+| `'blur'`   | when the field loses focus      |
+| `'submit'` | only when the form is submitted |
 
 Set it once at the form level to apply to all fields, or override it on individual fields (handy for making checkboxes `'change'` while text fields stay `'blur'`).
 
@@ -320,22 +342,16 @@ Import the helpers and list them in a field's `validators` array:
 ```ts
 import { required, minLength, maxLength, min, max } from '@forge-form/angular';
 
-validators: [
-  required(),
-  minLength({ value: 3 }),
-  maxLength({ value: 100 }),
-  min({ value: 0 }),
-  max({ value: 120 }),
-];
+validators: [required(), minLength({ value: 3 }), maxLength({ value: 100 }), min({ value: 0 }), max({ value: 120 })];
 ```
 
-| Validator       | Parameters                         | Checks                  |
-| --------------- | ---------------------------------- | ----------------------- |
-| `required()`    | _(optional `errorMessage`)_        | Field has a value.      |
-| `minLength()`   | `{ value: number, errorMessage? }` | Minimum string length.  |
-| `maxLength()`   | `{ value: number, errorMessage? }` | Maximum string length.  |
-| `min()`         | `{ value: number, errorMessage? }` | Minimum numeric value.  |
-| `max()`         | `{ value: number, errorMessage? }` | Maximum numeric value.  |
+| Validator     | Parameters                         | Checks                 |
+| ------------- | ---------------------------------- | ---------------------- |
+| `required()`  | _(optional `errorMessage`)_        | Field has a value.     |
+| `minLength()` | `{ value: number, errorMessage? }` | Minimum string length. |
+| `maxLength()` | `{ value: number, errorMessage? }` | Maximum string length. |
+| `min()`       | `{ value: number, errorMessage? }` | Minimum numeric value. |
+| `max()`       | `{ value: number, errorMessage? }` | Maximum numeric value. |
 
 Every helper accepts an optional `errorMessage` - see [customizing error messages](#customizing-error-messages).
 
@@ -366,13 +382,13 @@ Return `null` when the value is valid, or an error object when it isn't. The err
 
 By default each validator shows a sensible built-in message:
 
-| Validator   | Default message                        |
-| ----------- | -------------------------------------- |
-| `required`  | `This field is required`               |
-| `minlength` | `Minimum length is {requiredLength}`   |
-| `maxlength` | `Maximum length is {requiredLength}`   |
-| `min`       | `Minimum value is {min}`               |
-| `max`       | `Maximum value is {max}`               |
+| Validator   | Default message                      |
+| ----------- | ------------------------------------ |
+| `required`  | `This field is required`             |
+| `minlength` | `Minimum length is {requiredLength}` |
+| `maxlength` | `Maximum length is {requiredLength}` |
+| `min`       | `Minimum value is {min}`             |
+| `max`       | `Maximum value is {max}`             |
 
 You can override the message on any validator three ways via its `errorMessage` option:
 
@@ -395,7 +411,9 @@ import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-age-error',
-  template: `<strong style="color:red">{{ message() }}</strong>`,
+  template: `
+    <strong style="color:red">{{ message() }}</strong>
+  `,
 })
 export class AgeErrorComponent {
   message = input.required<string>();
@@ -417,24 +435,17 @@ The `inputs` function receives the validation details for that error and returns
 
 ### Changing defaults app-wide
 
-To replace a default message everywhere (rather than per field), provide the `ERROR_MESSAGES` token in your app or component providers. Each entry maps a validator type to its message:
-
-```ts
-import { ERROR_MESSAGES } from '@forge-form/angular';
-
-// app.config.ts
-export const appConfig: ApplicationConfig = {
-  providers: [
-    {
-      provide: ERROR_MESSAGES,
-      useValue: [{ type: 'required', message: 'This one is mandatory.' }],
-      multi: true,
-    },
-  ],
-};
-```
-
-The `message` can be a string, a function, or a custom component - the same three forms shown above. A message set directly on a validator still wins over these app-wide defaults.
+> **Not supported in 1.1.1.** Providing the exported `ERROR_MESSAGES` token from `app.config.ts` (or from your own component) **has no effect** — you still get the built-in text, e.g. `This field is required`.
+>
+> **Why:** this is the same injector-shadowing issue described under [Custom Field Types](#custom-field-types). `FormRendererComponent` provides `ERROR_MESSAGES: DEFAULT_ERROR_MESSAGES` in its own component-level `providers`, and `ErrorMessageRegistry` resolves the token from there — so an app-level array is never seen.
+>
+> **What to do instead:** set the message on the validator itself with `errorMessage`, which is per-schema and works reliably (see [above](#customizing-error-messages)). To apply one message consistently across a codebase, wrap the validator in a small factory and use it everywhere:
+>
+> ```ts
+> // shared/validators.ts
+> import { required } from '@forge-form/angular';
+> export const requiredField = () => required({ errorMessage: 'This one is mandatory.' });
+> ```
 
 ---
 
@@ -468,7 +479,9 @@ import { FormFieldContextComponent } from '@forge-form/angular';
 
 @Component({
   selector: 'app-char-counter',
-  template: `{{ currentLength() }} / {{ maxLength() }}`,
+  template: `
+    {{ currentLength() }} / {{ maxLength() }}
+  `,
 })
 export class CharCounterComponent extends FormFieldContextComponent {
   maxLength = input<number>();
@@ -486,33 +499,35 @@ Any field can show, hide, enable, or disable itself based on the rest of the for
 
 ```ts
 visibility: {
-  fn: (ctx) => boolean,        // true = visible/enabled, false = hidden/disabled
+  fn: (ctx) => boolean,        // true = hidden/disabled, false = visible/enabled
   behavior: 'hide' | 'disable',
-  clearOnHide?: boolean,        // reset the value when hidden/disabled
+  clearOnHide?: boolean,        // not implemented in 1.1.1 - see below
 }
 ```
+
+> **Read `fn` as "should this field be taken away?"** Returning `true` **hides** (or **disables**) the field; returning `false` shows (or enables) it. This is the opposite of what the property name suggests, so write the predicate for the condition under which the field should _disappear_.
 
 Your `fn` receives the current form context:
 
 ```ts
 fn: (ctx) => {
-  ctx.value;   // the whole current form value
-  ctx.form;    // the underlying form, for ctx.form.get('otherField')
+  ctx.value; // the whole current form value
+  ctx.form; // the underlying form, for ctx.form.get('otherField')
   ctx.control; // this field's control
-  return /* true to show, false to hide */;
-}
+  return /* true to HIDE / DISABLE, false to show / enable */;
+};
 ```
 
 The two behaviors:
 
-| `behavior`  | When `fn` returns `false`…                                       |
-| ----------- | ---------------------------------------------------------------- |
-| `'hide'`    | the field is removed from the page entirely                      |
-| `'disable'` | the field is disabled and left out of the submitted value        |
+| `behavior`  | When `fn` returns `true`…                                 | When `fn` returns `false`… |
+| ----------- | --------------------------------------------------------- | -------------------------- |
+| `'hide'`    | the field is removed from the page entirely               | the field is rendered      |
+| `'disable'` | the field is disabled and left out of the submitted value | the field is enabled       |
 
-Set `clearOnHide: true` to reset the field's value when it's hidden/disabled, so stale values aren't submitted.
+> **`clearOnHide` does nothing in 1.1.1.** The option is accepted by the type but never resets the control, for either behavior: the reset only lives on the `'disable'` code path, and the flag reaching that path is always `false`. A field that becomes hidden **keeps its value, and that value is still submitted.** If you need the stale value gone, reset it yourself — for example from the `fn` itself or by reacting to the value that drives the condition.
 
-**Example - only show the gender select once the name fields are valid:**
+**Example - hide the gender select until the first name is valid.** Because `fn` returns `true` to hide, the predicate is negated:
 
 ```ts
 {
@@ -524,9 +539,9 @@ Set `clearOnHide: true` to reset the field's value when it's hidden/disabled, so
     { value: 'male',   label: 'Male'   },
   ],
   visibility: {
-    fn: (ctx) => ctx.form.get('firstName')?.valid === true,
+    // hide WHILE firstName is invalid; shows once it becomes valid
+    fn: (ctx) => ctx.form.get('firstName')?.valid !== true,
     behavior: 'hide',
-    clearOnHide: true,
   },
 }
 ```
@@ -535,47 +550,17 @@ Set `clearOnHide: true` to reset the field's value when it's hidden/disabled, so
 
 ## Custom Field Types
 
-If the four built-in types aren't enough, you can register your own renderer for a new `type` (or replace a built-in one).
+> **Not supported in 1.1.1.** The `RENDERERS` token and the `FieldRenderer` interface are exported, but **registering your own field type from application code does not work.** Providing `RENDERERS` in `app.config.ts` (or in any component of your own) has no effect, and rendering a schema with your custom `type` fails at runtime with:
+>
+> ```
+> Error: No renderer for type: color
+> ```
+>
+> **Why:** `FormRendererComponent` and `GroupRendererComponent` declare the four built-in renderers in their _own_ component-level `providers`, and `RendererRegistry` is provided there too. Angular multi-providers do **not** merge across injectors — the component-level `RENDERERS` array completely replaces anything you provide further up, so the registry only ever sees the four built-ins.
+>
+> Until this is fixed, the usable field types are the four built-in ones: `text`, `number`, `checkbox`, and `select`. For inputs outside that set, keep the field out of the schema and render it alongside the form yourself.
 
-Write a component that exposes `control` and `controlSchema` inputs:
-
-```ts
-import { Component, Input } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { FieldRenderer } from '@forge-form/angular';
-
-@Component({
-  selector: 'app-color-picker-renderer',
-  template: `<input type="color" [formControl]="control" />`,
-  imports: [ReactiveFormsModule],
-})
-export class ColorPickerRendererComponent implements FieldRenderer {
-  @Input() control!: FormControl;
-  @Input() controlSchema!: unknown;
-}
-```
-
-Register it with the `RENDERERS` provider, matching a `type` string:
-
-```ts
-import { RENDERERS } from '@forge-form/angular';
-
-providers: [
-  {
-    provide: RENDERERS,
-    useValue: { type: 'color', component: ColorPickerRendererComponent },
-    multi: true,
-  },
-];
-```
-
-Then use that `type` anywhere in your schema:
-
-```ts
-{ type: 'color', controlName: 'brandColor', label: 'Brand Color' }
-```
-
-The library binds the field's control and schema to your component and renders it wherever that `type` appears.
+The extension points that **do** work today are [custom error components](#customizing-error-messages) (per validator, via `errorMessage`) and [custom hint components](#hints) (per field, via `hint`) — both are passed per-schema rather than through DI, which is why they are unaffected.
 
 ---
 
@@ -609,7 +594,9 @@ Or via `angular.json`:
 To activate the visual theme, set it in the schema:
 
 ```ts
-options: { theme: 'default' }
+options: {
+  theme: 'default';
+}
 ```
 
 ### Customizing the default theme
@@ -625,36 +612,36 @@ forge-form-angular {
 
 The variables you can override:
 
-| Property                 | Default value          | Controls                     |
-| ------------------------ | ---------------------- | ---------------------------- |
-| `--forge-gap-small-xx`   | `2px`                  | Field container gap          |
-| `--forge-gap-small-x`    | `0.25rem`              | -                            |
-| `--forge-gap-small`      | `0.5rem`               | Gap between controls         |
-| `--forge-gap-medium`     | `0.75rem`              | Gap between grouped fields   |
-| `--forge-border-radius`  | `0.25rem`              | Input / button border radius |
-| `--forge-color-label`    | `#202020`              | Label and hint text color    |
-| `--forge-color-border`   | `rgba(32,32,32,0.5)`   | Input border color           |
-| `--forge-color-disabled` | `#b6b6b6`              | Disabled button text/border  |
-| `--forge-color-error`    | `#b60000`              | Error message text color     |
+| Property                 | Default value        | Controls                     |
+| ------------------------ | -------------------- | ---------------------------- |
+| `--forge-gap-small-xx`   | `2px`                | Field container gap          |
+| `--forge-gap-small-x`    | `0.25rem`            | -                            |
+| `--forge-gap-small`      | `0.5rem`             | Gap between controls         |
+| `--forge-gap-medium`     | `0.75rem`            | Gap between grouped fields   |
+| `--forge-border-radius`  | `0.25rem`            | Input / button border radius |
+| `--forge-color-label`    | `#202020`            | Label and hint text color    |
+| `--forge-color-border`   | `rgba(32,32,32,0.5)` | Input border color           |
+| `--forge-color-disabled` | `#b6b6b6`            | Disabled button text/border  |
+| `--forge-color-error`    | `#b60000`            | Error message text color     |
 
 ### Styling without the default theme
 
 If you skip the default theme and style everything yourself, these are the class names the library puts on each element:
 
-| CSS class                     | Element                                  |
-| ----------------------------- | ---------------------------------------- |
-| `.forge-form`                 | the `<form>`                             |
-| `.forge-form-group`           | a group container                        |
-| `.forge-form-field-container` | the wrapper around each field            |
-| `.forge-form-field-label`     | the label text                           |
-| `.forge-form-input`           | text / number inputs                     |
-| `.forge-form-input-error`     | invalid text/number/select (when touched)|
-| `.forge-form-checkbox`        | checkbox input                           |
-| `.forge-form-checkbox-error`  | invalid checkbox (when dirty)            |
-| `.forge-form-select`          | select dropdown                          |
-| `.forge-form-hint`            | hint text                                |
-| `.forge-form-error`           | error message text                       |
-| `.forge-form-button`          | the submit button                        |
+| CSS class                     | Element                                   |
+| ----------------------------- | ----------------------------------------- |
+| `.forge-form`                 | the `<form>`                              |
+| `.forge-form-group`           | a group container                         |
+| `.forge-form-field-container` | the wrapper around each field             |
+| `.forge-form-field-label`     | the label text                            |
+| `.forge-form-input`           | text / number inputs                      |
+| `.forge-form-input-error`     | invalid text/number/select (when touched) |
+| `.forge-form-checkbox`        | checkbox input                            |
+| `.forge-form-checkbox-error`  | invalid checkbox (when dirty)             |
+| `.forge-form-select`          | select dropdown                           |
+| `.forge-form-hint`            | hint text                                 |
+| `.forge-form-error`           | error message text                        |
+| `.forge-form-button`          | the submit button                         |
 
 Orientation modifiers (`--row` / `--column`) are added to `.forge-form`, `.forge-form-group`, and `.forge-form-field-container` based on the relevant `orientation` / `labelOrientation` options. The error classes are added automatically when a field is invalid, so you can style error states even without the default theme.
 
@@ -667,21 +654,14 @@ This puts the major features together: a group, validators with custom messages,
 ```ts
 // app.component.ts
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import {
-  FormRendererComponent,
-  FormSchema,
-  FormFieldContextComponent,
-  required,
-  minLength,
-  maxLength,
-  min,
-  customValidator,
-} from '@forge-form/angular';
+import { FormRendererComponent, FormSchema, FormFieldContextComponent, required, minLength, maxLength, min, customValidator } from '@forge-form/angular';
 
 // --- Custom hint component (character counter) ---
 @Component({
   selector: 'app-char-counter',
-  template: `{{ current() }} / {{ maxLength() }} characters`,
+  template: `
+    {{ current() }} / {{ maxLength() }} characters
+  `,
 })
 export class CharCounterComponent extends FormFieldContextComponent {
   maxLength = input<number>(0);
@@ -691,7 +671,9 @@ export class CharCounterComponent extends FormFieldContextComponent {
 // --- Custom error component ---
 @Component({
   selector: 'app-age-error',
-  template: `<strong style="color:red">{{ message() }}</strong>`,
+  template: `
+    <strong style="color:red">{{ message() }}</strong>
+  `,
 })
 export class AgeErrorComponent {
   message = input.required<string>();
@@ -778,7 +760,8 @@ export class AppComponent {
         options: { labelOrientation: 'row' },
       },
 
-      // Select - only shown once both names are valid
+      // Select - only shown once both names are valid.
+      // NOTE: `fn` returns true to HIDE, so the condition is negated.
       {
         type: 'select',
         controlName: 'gender',
@@ -790,9 +773,9 @@ export class AppComponent {
           { value: 'other', label: 'Other' },
         ],
         visibility: {
-          fn: (ctx) => ctx.form.get('firstName')?.valid === true && ctx.form.get('lastName')?.valid === true,
+          fn: (ctx) => !(ctx.form.get('firstName')?.valid === true && ctx.form.get('lastName')?.valid === true),
           behavior: 'hide',
-          clearOnHide: true,
+          // clearOnHide is omitted: it has no effect in 1.1.1
         },
         options: { width: '200px' },
       },
@@ -813,4 +796,4 @@ export class AppComponent {
 
 ---
 
-_User guide for @forge-form/angular 1.1.0. Author: Marcin Spasiński_
+_User guide for @forge-form/angular 1.1.1. Author: Marcin Spasiński_

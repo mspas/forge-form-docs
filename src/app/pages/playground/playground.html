@@ -1,0 +1,80 @@
+<app-header />
+
+<main class="playground-page">
+  <div class="playground-page__header">
+    <p class="playground-page__eyebrow">Playground</p>
+    <h1 class="playground-page__title">Try it out.</h1>
+    <p class="playground-page__lead">
+      Edit the <code>FormSchema</code> on the left and the form on the right
+      re-renders as you type. Validators, layout and conditional fields all come
+      straight from the object -
+      <a routerLink="/docs" class="playground-page__link">
+        see the docs for the full reference →
+      </a>
+    </p>
+  </div>
+
+  <div class="pf-host pf-card">
+    <!-- chrome bar -->
+    <div class="pf-chrome">
+      <span class="dot dot--red"></span>
+      <span class="dot dot--amber"></span>
+      <span class="dot dot--green"></span>
+      <span class="pf-chrome__title">forge-form · live playground</span>
+      <button type="button" class="pf-reset" (click)="reset()">↺ reset</button>
+    </div>
+
+    <div class="pf-split">
+      <!-- left: editable JSON schema -->
+      <div class="pf-source">
+        <div class="pf-source__label">
+          <span>FormSchema</span>
+          <span class="pf-source__rule"></span>
+          <span class="pf-source__hint">edit to update live</span>
+        </div>
+        <textarea
+          class="pf-editor"
+          [value]="jsonSource()"
+          (input)="onSourceChange($any($event.target).value)"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+        ></textarea>
+        <div class="pf-status">
+          @if (parseError(); as err) {
+            <span class="pf-status__msg pf-status__msg--error">✗ {{ err }}</span>
+          } @else {
+            <span class="pf-status__msg pf-status__msg--ok">
+              ✓ valid JSON · {{ controlCount }} control(s)
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- right: rendered, live output -->
+      <div class="pf-output">
+        <div class="pf-output__label">
+          <span>Rendered output</span>
+          <span class="pf-output__rule"></span>
+          <span class="pf-pill" [class.pf-pill--ok]="valid()">
+            valid() → {{ valid() }}
+          </span>
+        </div>
+
+        <forge-form-angular [schema]="schema()" (formSubmit)="onSubmit()" />
+
+        @if (submitted()) {
+          <span class="pf-ok">✓ Valid - submitted</span>
+        }
+
+        <div class="pf-value">
+          <div class="pf-value__comment">// form.value() - signal, live</div>
+          <div class="pf-value__json">{{ valueJson }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-footer />

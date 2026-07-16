@@ -1,73 +1,140 @@
 <app-header />
 
-<div class="landing">
+<main class="landing">
   <!-- ============================= HERO ============================= -->
   <section class="hero">
-    <h1 class="hero__title">
-      <span class="accent">FORGE</span> YOUR<br />
-      NEXT <span class="accent">FORM</span>
-    </h1>
-    <h2 class="hero__subtitle">
-      Schema-driven reactive forms library for Angular 21+
-    </h2>
-    <div class="hero__row">
+    <div class="hero__intro">
+      <p class="hero__eyebrow">Schema-based forms for Angular 21+</p>
+      <h1 class="hero__title">
+        <em class="hero__title-accent">Forge</em> your <br> next <em class="hero__title-accent">Form</em>
+      </h1>
       <p class="hero__lead">
-        Hand <strong>ForgeForm</strong> a TypeScript schema and get back a
-        fully-wired Angular reactive form - validation, errors and conditional
-        fields, free.
+        Hand <b>ForgeForm</b> a TypeScript schema and get back a fully-wired Angular reactive form - validation, errors and conditional fields, free.
       </p>
-      <button type="button" class="install-btn" (click)="copyInstall()">
-        <span class="install-btn__sigil">$</span>
-        {{ copied() ? 'copied to clipboard' : install }}
-        <span>⧉</span>
-      </button>
+
+      <div class="hero__install">
+        <span class="hero__install-cmd">
+          <span class="hero__install-sigil">$</span>{{ install }}
+        </span>
+        <button
+          type="button"
+          class="hero__install-copy"
+          (click)="copyInstall()"
+          [title]="copied() ? 'Copied!' : 'Click to copy'"
+        >
+          {{ copied() ? 'copied' : 'copy' }}
+        </button>
+      </div>
+
+      <div class="hero__actions">
+        <a routerLink="/docs" class="hero__btn hero__btn--solid">
+          Read the docs →
+        </a>
+        <a routerLink="/playground" class="hero__btn hero__btn--outline">
+          Try the playground
+        </a>
+      </div>
+
+      <ul class="hero__meta">
+        @for (item of heroMeta; track item) {
+          <li class="hero__meta-item">{{ item }}</li>
+        }
+      </ul>
+    </div>
+
+    <div class="hero__preview code-card">
+      <div class="code-card__chrome">
+        <span class="code-card__dot"></span>
+        <span class="code-card__dot"></span>
+        <span class="code-card__dot"></span>
+        <span class="code-card__name">signup.schema.ts</span>
+      </div>
+      <div class="code-card__body">
+        <app-code-block [code]="heroSchemaCode" language="typescript" />
+      </div>
+      <div class="code-card__divider">
+        <span class="code-card__divider-label">forge-form renders</span>
+        <span class="code-card__divider-rule"></span>
+      </div>
+      <div class="pf-host code-card__form">
+        <forge-form-angular [schema]="heroSchema" />
+      </div>
     </div>
   </section>
 
-  <!-- ======================= COMPATIBILITY STRIP ======================= -->
-  <div class="compat">
-    <div class="compat__content">
-      @for (chip of compat; track chip.label) {
-        <span class="chip" [class.chip--accent]="chip.accent">{{ chip.label }}</span>
+  <!-- ============================ FEATURES ============================ -->
+  <section class="features" id="features">
+    <div class="features__header">
+      <h2 class="features__title">Core features</h2>
+    </div>
+
+    <div class="features__grid">
+      @for (feature of features; track feature.title) {
+        <article class="feature" [class.feature--wide]="feature.wide">
+          <div class="feature__head">
+            <span
+              class="feature__eyebrow feature__eyebrow--ember"
+            >
+              {{ feature.eyebrow }}
+            </span>
+            <h3 class="feature__title">{{ feature.title }}</h3>
+            <p class="feature__body">{{ feature.body }}</p>
+          </div>
+
+          @if (feature.code) {
+            <div class="feature__code">
+              <app-code-block [code]="feature.code" language="typescript" />
+            </div>
+          }
+          @if (feature.mono) {
+            <div class="feature__mono">
+              @for (line of feature.mono; track line) {
+                <span>{{ line }}</span>
+              }
+            </div>
+          }
+        </article>
       }
     </div>
-  </div>
-
-  <!-- ========================= FEATURE CARDS ========================= -->
-  <section class="features">
-    @for (f of features; track f.label) {
-      <article class="feature-card" [class]="'feature-card--' + f.variant">
-        <span class="feature-card__label">{{ f.label }}</span>
-        <div>
-          <h3 class="feature-card__title">{{ f.title }}</h3>
-          <p class="feature-card__body">{{ f.body }}</p>
-        </div>
-      </article>
-    }
   </section>
 
-  <!-- ========================== PLAYGROUND ========================== -->
-  <section class="playground-section" id="playground">
-    <div class="playground-section__header">
-      <h2 class="playground-section__title">Preview.</h2>
-      <span class="playground-section__description">
-        Type into the form. Toggle <span class="accent">employed</span> and watch
-        the conditional field - and the signal value - update live.
-      </span>
+  <!-- =========================== QUICK START =========================== -->
+  <section class="quickstart">
+    <div class="quickstart__intro">
+      <p class="quickstart__eyebrow">Quick start</p>
+      <h2 class="quickstart__title">One JSON to rule them all</h2>
+      <p class="quickstart__lead">
+        Import the component, declare a schema, drop one tag in your template.
+        No NgModule, no app-level providers for basic use.
+      </p>
+      <ol class="quickstart__steps">
+        @for (step of steps; track step.n) {
+          <li class="quickstart__step">
+            <span class="quickstart__step-n">{{ step.n }}</span>
+            <span>{{ step.text }}</span>
+          </li>
+        }
+      </ol>
+      <a routerLink="/docs" fragment="quick-start" class="quickstart__link">
+        Full quick start in the docs →
+      </a>
     </div>
-    <div class="playground-section__frame">
-      <app-playground />
+
+    <div class="quickstart__code code-card">
+      <div class="code-card__chrome code-card__chrome--plain">
+        <span class="code-card__name">user-form.component.ts</span>
+      </div>
+      <div class="code-card__body">
+        <app-code-block [code]="quickStartCode" language="typescript" />
+      </div>
     </div>
   </section>
 
-  <!-- ============================= FAQ ============================= -->
+  <!-- ============================== FAQ ============================== -->
   <section class="faq" id="faq">
     <div class="faq__header">
-      <h2 class="faq__title">FAQ.</h2>
-      <span class="faq__description">
-        Quick answers about ForgeForm - what it is, how it compares, and what you
-        need to get started.
-      </span>
+      <p class="faq__eyebrow">FAQ</p>
+      <h2 class="faq__title">Questions, answered.</h2>
     </div>
 
     <ul class="faq__list">
@@ -85,31 +152,17 @@
               <span class="faq-item__icon" aria-hidden="true">+</span>
             </button>
           </h3>
-          <div class="faq-item__answer-wrapper" [id]="'faq-answer-' + i" role="region">
+          <div
+            class="faq-item__answer-wrapper"
+            [id]="'faq-answer-' + i"
+            role="region"
+          >
             <p class="faq-item__answer">{{ item.answer }}</p>
           </div>
         </li>
       }
     </ul>
   </section>
+</main>
 
-  <!-- ========================== CTA BAND ========================== -->
-  <section class="cta">
-    <div class="cta__inner">
-      <h2 class="cta__title">Try it now.</h2>
-      <code class="cta__install-code">npm i &#64;forge-form/angular</code>
-      <div class="cta__buttons">
-        <a routerLink="/docs" class="cta__btn cta__btn--solid">Read the docs</a>
-        <a
-          [href]="githubUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="cta__btn cta__btn--outline cta__btn--github"
-        >
-          <app-github-icon [size]="18" />
-          Check on GitHub
-        </a>
-      </div>
-    </div>
-  </section>
-</div>
+<app-footer />

@@ -35,6 +35,9 @@ hljs.registerLanguage('scss', scss);
         margin: 0;
         overflow: auto;
       }
+      code {
+        font: 13px/1.65 var(--font-mono);
+      }
     `,
   ],
 })

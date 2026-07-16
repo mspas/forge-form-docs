@@ -1,8 +1,11 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * forge-form brand mark. The body paths inherit the surrounding text color
- * via `currentColor`; the two accent bars stay teal.
+ * forge-form brand mark. The body paths inherit the surrounding text color via
+ * `currentColor`; the two accent bars track `--accent`, so a palette change
+ * carries here automatically. public/favicon.svg is the same artwork but must
+ * hardcode its colours - a linked icon file gets no page CSS - so it needs
+ * updating by hand whenever the accent moves.
  */
 @Component({
   selector: 'app-logo',
@@ -31,8 +34,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         d="M138.24 0H6.19888e-06L43.52 46.08H138.24V0Z"
         fill="currentColor"
       />
-      <path d="M145 74H242L208.878 108H145V74Z" fill="#1FBFA6" />
-      <path d="M145 74H48L81.122 108H145V74Z" fill="#1FBFA6" />
+      <path d="M145 74H242L208.878 108H145V74Z" fill="var(--accent)" />
+      <path d="M145 74H48L81.122 108H145V74Z" fill="var(--accent)" />
     </svg>
   `,
 })
