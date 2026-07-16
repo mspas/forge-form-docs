@@ -1,6 +1,6 @@
 # @forge-form/angular - User Guide
 
-**Version:** 1.1.1 · **License:** MIT
+**Version:** 1.2.1 · **License:** MIT
 
 ---
 
@@ -26,20 +26,23 @@
 10. [Custom Field Types](#custom-field-types)
 11. [Styling & Theming](#styling--theming)
 12. [Full Working Example](#full-working-example)
-13. [Known Limitations in 1.1.1](#known-limitations-in-111)
+13. [Known Limitations](#known-limitations)
+14. [Planned Features](#planned-features)
 
 ---
 
-## Known Limitations in 1.1.1
+## Known Limitations
 
-Before you build against this guide, a few parts of the API are **declared but not wired up**, and the visibility predicate runs **inverted** relative to its name. Each is verified against the shipped build and explained where it comes up:
+A few things this guide deliberately does **not** promise, because the library does not do them (yet):
 
-- **Custom field types don't work.** You are limited to `text`, `number`, `checkbox`, `select`. See [Custom Field Types](#custom-field-types).
-- **App-wide error message overrides don't work.** Set the message on the validator instead. See [Changing defaults app-wide](#changing-defaults-app-wide).
-- **`visibility.fn` returning `true` HIDES the field** (not shows it). See [Conditional Visibility](#conditional-visibility).
-- **`clearOnHide` does nothing** — hidden fields keep their value and still submit it.
-- **`FormSchema.id`** is accepted but never rendered.
+- **Custom field types are not supported.** You have `text`, `number`, `checkbox`, `select`. See [Custom Field Types](#custom-field-types) — this is the top item in [Planned Features](#planned-features).
+- **App-wide error message overrides are not supported.** Set the message on the validator instead. See [Changing defaults app-wide](#changing-defaults-app-wide).
 - **`labelOrientation` on a group** is ignored; set it per field or form-wide.
+
+> **Migrating from ≤1.1.1?** Two breaking changes:
+>
+> - `visibility.fn` polarity has been **inverted**: it now returns `true` to _show_ the field, matching its name. Predicates written for 1.1.1 must be negated. `clearOnHide` also works now. See [Conditional Visibility](#conditional-visibility).
+> - The DI tokens `RENDERERS`, `ERROR_MESSAGES`, `DEFAULT_ERROR_FALLBACK`, and `FORM_OPTIONS` are **no longer exported**. They never functioned as extension points, so no working code breaks — but imports of them must be removed.
 
 Everything else in this guide — validators and their messages, hints, `value()` / `valid()`, `hideSubmitButton`, layout, theming, `updateOn` — behaves as described.
 
@@ -54,7 +57,7 @@ What this gives you:
 - **No form markup to write** - the structure lives in your schema, not your template.
 - **Reactive Forms power without the boilerplate** - Angular's reactive forms run under the hood; you never touch `FormGroup`/`FormControl` directly.
 - **Standalone** - just import the component. No `NgModule`, no app-wide setup for basic use.
-- **Extensible where it counts** - plug in your own error components and hint components. (Custom _field types_ are not usable in 1.1.1 - see [Custom Field Types](#custom-field-types).)
+- **Extensible where it counts** - plug in your own error components and hint components. (Custom _field types_ are not supported yet - see [Planned Features](#planned-features).)
 
 Requires **Angular v21+**.
 
@@ -153,7 +156,7 @@ The root `FormSchema` is the object you pass to `[schema]`:
 ```ts
 interface FormSchema {
   controls: (GroupFieldSchema | ControlSchema)[]; // your fields and groups
-  id?: string; // accepted, but not applied in 1.1.1
+  id?: string; // rendered as the <form> element's id
   updateOn?: 'change' | 'blur' | 'submit'; // default update strategy
   options?: FormOptions; // layout + theme
 }
@@ -162,11 +165,11 @@ interface FormSchema {
 | Property   | What it does                                                                  |
 | ---------- | ----------------------------------------------------------------------------- |
 | `controls` | **Required.** The ordered list of fields and groups that make up the form.    |
-| `id`       | **No effect in 1.1.1.** See the note below.                                   |
+| `id`       | Rendered as the `id` attribute of the `<form>` element.                       |
 | `updateOn` | When values/validation refresh by default - see [below](#when-values-update). |
 | `options`  | Form-wide layout and theme - see [layout options](#layout--sizing-options).   |
 
-> **`id` is never applied.** The property exists on the interface, but the rendered `<form>` only ever receives `class`, `formGroup`, and a submit handler — no `id` attribute reaches the DOM. If you need to target the form element (for a label, a test hook, or an external submit button), wrap `<forge-form-angular>` in a container of your own and target that instead.
+> Use `id` when you need to target the form element directly — for example an external submit button (`<button type="submit" form="my-form">`), a test hook, or an anchor link. If you leave it out, no `id` attribute is rendered.
 
 Form-level `options`:
 
@@ -435,17 +438,15 @@ The `inputs` function receives the validation details for that error and returns
 
 ### Changing defaults app-wide
 
-> **Not supported in 1.1.1.** Providing the exported `ERROR_MESSAGES` token from `app.config.ts` (or from your own component) **has no effect** — you still get the built-in text, e.g. `This field is required`.
->
-> **Why:** this is the same injector-shadowing issue described under [Custom Field Types](#custom-field-types). `FormRendererComponent` provides `ERROR_MESSAGES: DEFAULT_ERROR_MESSAGES` in its own component-level `providers`, and `ErrorMessageRegistry` resolves the token from there — so an app-level array is never seen.
->
-> **What to do instead:** set the message on the validator itself with `errorMessage`, which is per-schema and works reliably (see [above](#customizing-error-messages)). To apply one message consistently across a codebase, wrap the validator in a small factory and use it everywhere:
->
-> ```ts
-> // shared/validators.ts
-> import { required } from '@forge-form/angular';
-> export const requiredField = () => required({ errorMessage: 'This one is mandatory.' });
-> ```
+> **Not supported yet.** There is no app-wide way to replace the built-in error texts — this is planned (see [Planned Features](#planned-features)).
+
+**What to do instead:** set the message on the validator itself with `errorMessage`, which is per-schema and works reliably (see [above](#customizing-error-messages)). To apply one message consistently across a codebase, wrap the validator in a small factory and use it everywhere:
+
+```ts
+// shared/validators.ts
+import { required } from '@forge-form/angular';
+export const requiredField = () => required({ errorMessage: 'This one is mandatory.' });
+```
 
 ---
 
@@ -499,13 +500,15 @@ Any field can show, hide, enable, or disable itself based on the rest of the for
 
 ```ts
 visibility: {
-  fn: (ctx) => boolean,        // true = hidden/disabled, false = visible/enabled
+  fn: (ctx) => boolean,        // true = visible/enabled, false = hidden/disabled
   behavior: 'hide' | 'disable',
-  clearOnHide?: boolean,        // not implemented in 1.1.1 - see below
+  clearOnHide?: boolean,        // reset the value when the field becomes hidden
 }
 ```
 
-> **Read `fn` as "should this field be taken away?"** Returning `true` **hides** (or **disables**) the field; returning `false` shows (or enables) it. This is the opposite of what the property name suggests, so write the predicate for the condition under which the field should _disappear_.
+> **Read `fn` as "is this field visible?"** Returning `true` **shows** (or **enables**) the field; returning `false` hides (or disables) it.
+>
+> ⚠️ **Breaking change from ≤1.1.1**, where the polarity was inverted (`true` hid the field). If you are upgrading, negate every visibility predicate.
 
 Your `fn` receives the current form context:
 
@@ -514,20 +517,22 @@ fn: (ctx) => {
   ctx.value; // the whole current form value
   ctx.form; // the underlying form, for ctx.form.get('otherField')
   ctx.control; // this field's control
-  return /* true to HIDE / DISABLE, false to show / enable */;
+  return /* true to SHOW / ENABLE, false to hide / disable */;
 };
 ```
 
 The two behaviors:
 
-| `behavior`  | When `fn` returns `true`…                                 | When `fn` returns `false`… |
-| ----------- | --------------------------------------------------------- | -------------------------- |
-| `'hide'`    | the field is removed from the page entirely               | the field is rendered      |
-| `'disable'` | the field is disabled and left out of the submitted value | the field is enabled       |
+| `behavior`  | When `fn` returns `false`…                                                                                                                  | When `fn` returns `true`…                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `'hide'`    | the field is removed from the page **and its control is disabled** — it stops validating and its value is left out of the submitted payload | the field is rendered and its control re-enabled |
+| `'disable'` | the field stays on the page but is disabled and left out of the submitted value                                                             | the field is enabled                             |
 
-> **`clearOnHide` does nothing in 1.1.1.** The option is accepted by the type but never resets the control, for either behavior: the reset only lives on the `'disable'` code path, and the flag reaching that path is always `false`. A field that becomes hidden **keeps its value, and that value is still submitted.** If you need the stale value gone, reset it yourself — for example from the `fn` itself or by reacting to the value that drives the condition.
+In both modes a hidden/disabled field is excluded from form validation, so a `required` field that is currently hidden does not block submit.
 
-**Example - hide the gender select until the first name is valid.** Because `fn` returns `true` to hide, the predicate is negated:
+> **`clearOnHide`** resets the control's value (to `null`) on the **transition** to hidden, for either behavior. A field that _starts_ hidden is not cleared — its initial value is kept (but excluded from the payload) until it either becomes visible or is hidden again later. Without `clearOnHide`, a hidden field keeps its value internally and it returns when the field reappears.
+
+**Example - show the gender select once the first name is valid:**
 
 ```ts
 {
@@ -539,8 +544,8 @@ The two behaviors:
     { value: 'male',   label: 'Male'   },
   ],
   visibility: {
-    // hide WHILE firstName is invalid; shows once it becomes valid
-    fn: (ctx) => ctx.form.get('firstName')?.valid !== true,
+    // visible once firstName becomes valid
+    fn: (ctx) => ctx.form.get('firstName')?.valid === true,
     behavior: 'hide',
   },
 }
@@ -550,17 +555,15 @@ The two behaviors:
 
 ## Custom Field Types
 
-> **Not supported in 1.1.1.** The `RENDERERS` token and the `FieldRenderer` interface are exported, but **registering your own field type from application code does not work.** Providing `RENDERERS` in `app.config.ts` (or in any component of your own) has no effect, and rendering a schema with your custom `type` fails at runtime with:
+> **Not supported yet.** The usable field types are the four built-in ones: `text`, `number`, `checkbox`, and `select`. Rendering a schema with any other `type` fails at runtime with:
 >
 > ```
 > Error: No renderer for type: color
 > ```
 >
-> **Why:** `FormRendererComponent` and `GroupRendererComponent` declare the four built-in renderers in their _own_ component-level `providers`, and `RendererRegistry` is provided there too. Angular multi-providers do **not** merge across injectors — the component-level `RENDERERS` array completely replaces anything you provide further up, so the registry only ever sees the four built-ins.
->
-> Until this is fixed, the usable field types are the four built-in ones: `text`, `number`, `checkbox`, and `select`. For inputs outside that set, keep the field out of the schema and render it alongside the form yourself.
+> Registering your own field types is the **top item in [Planned Features](#planned-features)**. Until then, for inputs outside the built-in set, keep the field out of the schema and render it alongside the form yourself.
 
-The extension points that **do** work today are [custom error components](#customizing-error-messages) (per validator, via `errorMessage`) and [custom hint components](#hints) (per field, via `hint`) — both are passed per-schema rather than through DI, which is why they are unaffected.
+The extension points that **do** work today are [custom error components](#customizing-error-messages) (per validator, via `errorMessage`) and [custom hint components](#hints) (per field, via `hint`) — both are passed per-schema.
 
 ---
 
@@ -773,9 +776,10 @@ export class AppComponent {
           { value: 'other', label: 'Other' },
         ],
         visibility: {
-          fn: (ctx) => !(ctx.form.get('firstName')?.valid === true && ctx.form.get('lastName')?.valid === true),
+          // visible once both names are valid
+          fn: (ctx) => ctx.form.get('firstName')?.valid === true && ctx.form.get('lastName')?.valid === true,
           behavior: 'hide',
-          // clearOnHide is omitted: it has no effect in 1.1.1
+          clearOnHide: true,
         },
         options: { width: '200px' },
       },
@@ -796,4 +800,13 @@ export class AppComponent {
 
 ---
 
-_User guide for @forge-form/angular 1.1.1. Author: Marcin Spasiński_
+## Planned Features
+
+None of these are available yet — they are listed so you can plan around what's coming:
+
+- **Custom field types** _(top priority)_ — register your own renderers (date picker, radio group, textarea, …) for new `type` strings.
+- **App-wide error messages** — override the default validation texts once for the whole application, instead of per validator.
+
+---
+
+_User guide for @forge-form/angular 1.2.1. Author: Marcin Spasiński_
